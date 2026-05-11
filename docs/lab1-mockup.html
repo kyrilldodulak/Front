@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <title>GameShop — ескіз головної сторінки (Лаба 1)</title>
+  <style>
+    :root {
+      --bg: #0f1420;
+      --panel: #1a2030;
+      --panel-2: #232a3d;
+      --accent: #ff5b3a;
+      --accent-2: #ffd166;
+      --text: #e6e9f2;
+      --muted: #8d97b3;
+      --border: #2c3349;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      min-height: 100vh;
+    }
+    .mockup-note {
+      background: #fff5d6;
+      color: #5c4400;
+      padding: 8px 16px;
+      font-size: 13px;
+      text-align: center;
+      border-bottom: 2px dashed #d4a017;
+    }
+    header.site {
+      background: var(--panel);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 32px;
+      display: flex;
+      align-items: center;
+      gap: 32px;
+    }
+    .logo {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--accent);
+      letter-spacing: 1px;
+    }
+    .logo span { color: var(--text); }
+    nav.primary ul {
+      list-style: none;
+      display: flex;
+      gap: 24px;
+    }
+    nav.primary a {
+      color: var(--text);
+      text-decoration: none;
+      font-weight: 500;
+    }
+    nav.primary a:hover { color: var(--accent-2); }
+    .header-actions {
+      margin-left: auto;
+      display: flex;
+      gap: 12px;
+    }
+    .btn {
+      display: inline-block;
+      padding: 8px 18px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      transition: transform 0.15s ease, background 0.15s ease;
+    }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-primary:hover { background: #ff7559; }
+    .btn-ghost { background: transparent; color: var(--text); border: 1px solid var(--border); }
+    .btn-ghost:hover { border-color: var(--accent-2); color: var(--accent-2); }
+
+    main { padding: 32px; max-width: 1280px; margin: 0 auto; }
+
+    .hero {
+      position: relative;
+      background: linear-gradient(135deg, #2a1a4a 0%, #ff5b3a 100%);
+      border-radius: 16px;
+      padding: 48px;
+      min-height: 320px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 16px;
+      overflow: hidden;
+    }
+    .hero h1 { font-size: 42px; max-width: 60%; line-height: 1.1; }
+    .hero p { color: #ffe4d4; max-width: 50%; font-size: 18px; }
+    .hero-badge {
+      position: absolute;
+      top: 24px;
+      right: 24px;
+      background: var(--accent-2);
+      color: #2a1a4a;
+      font-weight: 800;
+      padding: 8px 14px;
+      border-radius: 999px;
+    }
+    .hero-art {
+      position: absolute;
+      right: -40px;
+      bottom: -40px;
+      width: 360px;
+      height: 360px;
+      background: radial-gradient(circle, rgba(255,209,102,0.5), transparent 70%);
+      border-radius: 50%;
+    }
+
+    section.block { margin-top: 40px; }
+    section.block h2 {
+      font-size: 24px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    section.block h2::before {
+      content: "";
+      width: 6px;
+      height: 24px;
+      background: var(--accent);
+      border-radius: 3px;
+    }
+
+    .games-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+    }
+    .game-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .cover {
+      aspect-ratio: 4 / 3;
+      background: linear-gradient(135deg, #3a2a6a, #1a4a6a);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(255,255,255,0.4);
+      font-size: 14px;
+    }
+    .game-card-body { padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+    .game-title { font-weight: 600; font-size: 15px; }
+    .game-row { display: flex; justify-content: space-between; align-items: center; }
+    .price { color: var(--accent-2); font-weight: 700; font-size: 16px; }
+    .game-card .btn-primary { padding: 6px 12px; font-size: 13px; }
+
+    .news-list {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+    .news-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      display: flex;
+      gap: 14px;
+    }
+    .news-thumb {
+      width: 96px;
+      height: 96px;
+      flex-shrink: 0;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #ff5b3a, #ffd166);
+    }
+    .news-card h3 { font-size: 15px; margin-bottom: 6px; }
+    .news-card time { color: var(--muted); font-size: 12px; }
+    .news-card p { font-size: 13px; color: var(--muted); margin-top: 6px; }
+
+    footer.site {
+      margin-top: 64px;
+      background: var(--panel);
+      border-top: 1px solid var(--border);
+      padding: 32px;
+      display: flex;
+      justify-content: space-between;
+      gap: 32px;
+      flex-wrap: wrap;
+      color: var(--muted);
+    }
+    footer.site h4 { color: var(--text); margin-bottom: 8px; }
+    footer.site ul { list-style: none; }
+    footer.site li { padding: 4px 0; }
+  </style>
+</head>
+<body>
+  <p class="mockup-note">
+    Це ескіз головної сторінки для Лабораторної №1. Жодної інтерактивної логіки тут немає,
+    реальна реалізація з'явиться у Лабах 2-6.
+  </p>
+
+  <header class="site">
+    <div class="logo">GAME<span>SHOP</span></div>
+    <nav class="primary">
+      <ul>
+        <li><a href="#">Каталог</a></li>
+        <li><a href="#">Новини</a></li>
+        <li><a href="#">Кошик</a></li>
+        <li><a href="#">Підтримка</a></li>
+      </ul>
+    </nav>
+    <div class="header-actions">
+      <a href="#" class="btn btn-ghost">Логін</a>
+      <a href="#" class="btn btn-primary">Реєстрація</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <span class="hero-badge">-30% до неділі</span>
+      <h1>Літній розпродаж AAA-тайтлів</h1>
+      <p>Понад 200 ігор зі знижкою. Купи зараз і отримай бонусні гральні карти.</p>
+      <div>
+        <a href="#" class="btn btn-primary">До каталогу</a>
+      </div>
+      <div class="hero-art"></div>
+    </section>
+
+    <section class="block">
+      <h2>Популярні ігри</h2>
+      <div class="games-grid">
+        <article class="game-card">
+          <div class="cover">обкладинка 4:3</div>
+          <div class="game-card-body">
+            <div class="game-title">Cyberpunk 2077</div>
+            <div class="game-row">
+              <span class="price">899 ₴</span>
+              <a href="#" class="btn btn-primary">У кошик</a>
+            </div>
+          </div>
+        </article>
+        <article class="game-card">
+          <div class="cover">обкладинка 4:3</div>
+          <div class="game-card-body">
+            <div class="game-title">The Witcher 3: Wild Hunt</div>
+            <div class="game-row">
+              <span class="price">499 ₴</span>
+              <a href="#" class="btn btn-primary">У кошик</a>
+            </div>
+          </div>
+        </article>
+        <article class="game-card">
+          <div class="cover">обкладинка 4:3</div>
+          <div class="game-card-body">
+            <div class="game-title">Hades II</div>
+            <div class="game-row">
+              <span class="price">699 ₴</span>
+              <a href="#" class="btn btn-primary">У кошик</a>
+            </div>
+          </div>
+        </article>
+        <article class="game-card">
+          <div class="cover">обкладинка 4:3</div>
+          <div class="game-card-body">
+            <div class="game-title">Baldur's Gate 3</div>
+            <div class="game-row">
+              <span class="price">1499 ₴</span>
+              <a href="#" class="btn btn-primary">У кошик</a>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="block">
+      <h2>Новини магазину</h2>
+      <div class="news-list">
+        <article class="news-card">
+          <div class="news-thumb"></div>
+          <div>
+            <h3>Запуск версії 1.0 GameShop</h3>
+            <time>10 травня 2026</time>
+            <p>Ми відкрили ранній доступ до власної бета-платформи.</p>
+          </div>
+        </article>
+        <article class="news-card">
+          <div class="news-thumb"></div>
+          <div>
+            <h3>Партнерство з RAWG.io</h3>
+            <time>05 травня 2026</time>
+            <p>Каталог підтягується з найбільшої відкритої БД ігор.</p>
+          </div>
+        </article>
+        <article class="news-card">
+          <div class="news-thumb"></div>
+          <div>
+            <h3>Бонусна програма</h3>
+            <time>01 травня 2026</time>
+            <p>Отримуйте 5% кешбеку гральними картами за кожне замовлення.</p>
+          </div>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site">
+    <div>
+      <h4>GameShop</h4>
+      <p>Інтернет-магазин відеоігор та аксесуарів.</p>
+    </div>
+    <div>
+      <h4>Меню</h4>
+      <ul>
+        <li>Каталог</li>
+        <li>Новини</li>
+        <li>Підтримка</li>
+      </ul>
+    </div>
+    <div>
+      <h4>Контакти</h4>
+      <ul>
+        <li>support@gameshop.local</li>
+        <li>+38 (000) 000-00-00</li>
+        <li>Київ, КПІ ім. Сікорського</li>
+      </ul>
+    </div>
+  </footer>
+</body>
+</html>

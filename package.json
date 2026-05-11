@@ -1,0 +1,24 @@
+{
+  "name": "gameshop",
+  "version": "0.1.0",
+  "private": true,
+  "description": "GameShop — інтернет-магазин відеоігор. Курсовий проект з frontend (КПІ ім. Сікорського, КМ-32).",
+  "workspaces": [
+    "server",
+    "client-react"
+  ],
+  "scripts": {
+    "dev": "npm-run-all --parallel dev:client dev:server",
+    "dev:server": "npm run dev --workspace server",
+    "dev:client": "npm run dev --workspace client-react",
+    "build": "npm run build --workspace client-react && npm run build --workspace server",
+    "start": "npm run start --workspace server",
+    "lint": "echo \"no linter configured\""
+  },
+  "devDependencies": {
+    "npm-run-all": "^4.1.5"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

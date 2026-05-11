@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Кошик — GameShop</title>
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/layout.css">
+  <link rel="stylesheet" href="/css/responsive.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Перейти до основного вмісту</a>
+
+  <header id="siteHeader">
+    <div class="header-inner">
+      <a href="/" class="logo">GAME<span>SHOP</span></a>
+      <nav aria-label="Основна навігація">
+        <ul>
+          <li><a href="/">Головна</a></li>
+          <li><a href="/catalog">Каталог</a></li>
+          <li><a href="/cart.html" aria-current="page">Кошик <span id="cartCount">0</span></a></li>
+          <li><a href="/profile">Профіль</a></li>
+        </ul>
+      </nav>
+      <div class="header-actions" id="authBlock">
+        <a href="/login.html" class="btn btn-ghost">Увійти</a>
+        <a href="/register.html" class="btn btn-primary">Реєстрація</a>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+    <ol class="breadcrumbs">
+      <li><a href="/">Головна</a></li>
+      <li>Кошик</li>
+    </ol>
+
+    <h1>Ваш кошик</h1>
+
+    <div class="cart-wrapper">
+      <section aria-labelledby="cartItemsTitle">
+        <h2 id="cartItemsTitle">Позиції</h2>
+        <div id="cartItems" aria-live="polite"></div>
+        <div id="cartEmpty" class="cart-empty card" hidden>
+          <p>Кошик поки що порожній.</p>
+          <a href="/catalog" class="btn btn-primary mt-16">Перейти до каталогу</a>
+        </div>
+      </section>
+
+      <aside class="summary" aria-labelledby="summaryTitle">
+        <h2 id="summaryTitle" style="font-size:18px;">Підсумок</h2>
+        <div class="row"><span>Позицій</span><span id="sumQty">0</span></div>
+        <div class="row"><span>Сума без знижки</span><span id="sumSubtotal">0 ₴</span></div>
+        <div class="row"><span>Знижка</span><span id="sumDiscount">0 ₴</span></div>
+        <div class="row total"><span>До сплати</span><span id="sumTotal">0 ₴</span></div>
+        <a href="/checkout.html" id="checkoutBtn" class="btn btn-primary btn-block">Оформити замовлення</a>
+        <button id="clearCart" class="btn btn-ghost btn-block" type="button">Очистити кошик</button>
+      </aside>
+    </div>
+  </main>
+
+  <footer class="site">
+    <div class="footer-inner">
+      <div><h4>GameShop</h4><p>© 2026, КПІ ім. Сікорського</p></div>
+    </div>
+  </footer>
+
+  <script src="/js/header.js" defer></script>
+  <script src="/js/cart.js" defer></script>
+</body>
+</html>

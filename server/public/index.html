@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="GameShop — інтернет-магазин відеоігор та ігрових аксесуарів.">
+  <title>GameShop — головна</title>
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/layout.css">
+  <link rel="stylesheet" href="/css/responsive.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Перейти до основного вмісту</a>
+
+  <header id="siteHeader">
+    <div class="header-inner">
+      <a href="/" class="logo" aria-label="GameShop, повернутись на головну">
+        GAME<span>SHOP</span>
+      </a>
+      <nav aria-label="Основна навігація">
+        <ul>
+          <li><a href="/" aria-current="page">Головна</a></li>
+          <li><a href="/catalog">Каталог</a></li>
+          <li><a href="/cart.html">Кошик <span id="cartCount" aria-label="кількість у кошику">0</span></a></li>
+          <li><a href="/profile">Профіль</a></li>
+        </ul>
+      </nav>
+      <div class="header-actions" id="authBlock">
+        <a href="/login.html" class="btn btn-ghost">Увійти</a>
+        <a href="/register.html" class="btn btn-primary">Реєстрація</a>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="hero" aria-labelledby="heroTitle">
+      <span class="deal-badge" aria-label="акція до неділі">-30% до неділі</span>
+      <div class="hero-text">
+        <h1 id="heroTitle">Літній розпродаж AAA-тайтлів</h1>
+        <p>Понад 200 ігор зі знижкою. Купи зараз і отримай бонусні гральні карти.</p>
+        <a href="/catalog" class="btn btn-primary">До каталогу</a>
+      </div>
+      <div class="hero-image-wrap">
+        <!-- зображення з image map: 5 окремих платформ ведуть на каталог із фільтром -->
+        <img
+          class="hero-image"
+          src="/images/hero-platforms.svg"
+          alt="Платформи: PC, PlayStation, Xbox, Switch, Steam Deck — клікабельні зони"
+          usemap="#platformsMap"
+        >
+        <map name="platformsMap">
+          <area shape="rect" coords="0,0,150,150" href="/catalog?platform=pc" alt="PC">
+          <area shape="rect" coords="150,0,300,150" href="/catalog?platform=playstation" alt="PlayStation">
+          <area shape="rect" coords="300,0,450,150" href="/catalog?platform=xbox" alt="Xbox">
+          <area shape="rect" coords="0,150,225,300" href="/catalog?platform=nintendo" alt="Nintendo Switch">
+          <area shape="rect" coords="225,150,450,300" href="/catalog?platform=steamdeck" alt="Steam Deck">
+        </map>
+      </div>
+    </section>
+
+    <section class="block" aria-labelledby="popularTitle">
+      <h2 id="popularTitle">Популярні ігри</h2>
+      <p class="muted">Топ продаж за тиждень. Усі ціни — у гривнях, з ПДВ.</p>
+      <div class="games-grid mt-16" id="popularGrid">
+        <article class="game-card">
+          <img class="cover" src="/images/cover-1.svg" alt="Обкладинка Cyberpunk 2077">
+          <div class="game-card-body">
+            <h3 class="game-title">Cyberpunk 2077</h3>
+            <ul class="tag-list" aria-label="жанри">
+              <li>RPG</li><li>Action</li><li>Open World</li>
+            </ul>
+            <div class="game-row">
+              <span class="price">899 ₴</span>
+              <button class="btn btn-primary" data-add-to-cart data-id="cp2077" data-title="Cyberpunk 2077" data-price="899" data-image="/images/cover-1.svg">У кошик</button>
+            </div>
+          </div>
+        </article>
+        <article class="game-card">
+          <img class="cover" src="/images/cover-2.svg" alt="Обкладинка The Witcher 3">
+          <div class="game-card-body">
+            <h3 class="game-title">The Witcher 3: Wild Hunt</h3>
+            <ul class="tag-list" aria-label="жанри">
+              <li>RPG</li><li>Adventure</li>
+            </ul>
+            <div class="game-row">
+              <span class="price">499 ₴</span>
+              <button class="btn btn-primary" data-add-to-cart data-id="tw3" data-title="The Witcher 3: Wild Hunt" data-price="499" data-image="/images/cover-2.svg">У кошик</button>
+            </div>
+          </div>
+        </article>
+        <article class="game-card">
+          <img class="cover" src="/images/cover-3.svg" alt="Обкладинка Hades II">
+          <div class="game-card-body">
+            <h3 class="game-title">Hades II</h3>
+            <ul class="tag-list" aria-label="жанри">
+              <li>Roguelike</li><li>Action</li>
+            </ul>
+            <div class="game-row">
+              <span class="price">699 ₴</span>
+              <button class="btn btn-primary" data-add-to-cart data-id="hades2" data-title="Hades II" data-price="699" data-image="/images/cover-3.svg">У кошик</button>
+            </div>
+          </div>
+        </article>
+        <article class="game-card">
+          <img class="cover" src="/images/cover-4.svg" alt="Обкладинка Baldur's Gate 3">
+          <div class="game-card-body">
+            <h3 class="game-title">Baldur's Gate 3</h3>
+            <ul class="tag-list" aria-label="жанри">
+              <li>CRPG</li><li>Strategy</li>
+            </ul>
+            <div class="game-row">
+              <span class="price">1499 ₴</span>
+              <button class="btn btn-primary" data-add-to-cart data-id="bg3" data-title="Baldur's Gate 3" data-price="1499" data-image="/images/cover-4.svg">У кошик</button>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="block mt-24" aria-labelledby="specsTitle">
+      <h2 id="specsTitle">Технічні характеристики (приклад)</h2>
+      <div class="card">
+        <table>
+          <caption>Системні вимоги до гри Cyberpunk 2077</caption>
+          <thead>
+            <tr>
+              <th scope="col">Параметр</th>
+              <th scope="col">Мінімум</th>
+              <th scope="col">Рекомендовано</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">CPU</th>
+              <td>Intel Core i5-3570K</td>
+              <td>Intel Core i7-4790</td>
+            </tr>
+            <tr>
+              <th scope="row">RAM</th>
+              <td>8 GB</td>
+              <td>12 GB</td>
+            </tr>
+            <tr>
+              <th scope="row">GPU</th>
+              <td>GeForce GTX 780</td>
+              <td>GeForce GTX 1060 6GB</td>
+            </tr>
+            <tr>
+              <th scope="row">SSD</th>
+              <td>70 GB HDD</td>
+              <td>70 GB SSD</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="block mt-24" aria-labelledby="newsTitle">
+      <h2 id="newsTitle">Новини магазину</h2>
+      <div class="news-list">
+        <article class="news-card">
+          <div class="news-thumb" role="img" aria-label="ілюстрація"></div>
+          <div>
+            <h3>Запуск версії 1.0 GameShop</h3>
+            <time datetime="2026-05-10">10 травня 2026</time>
+            <p>Ми відкрили ранній доступ до власної бета-платформи.</p>
+          </div>
+        </article>
+        <article class="news-card">
+          <div class="news-thumb" role="img" aria-label="ілюстрація"></div>
+          <div>
+            <h3>Партнерство з <a href="https://rawg.io" rel="noopener">RAWG.io</a></h3>
+            <time datetime="2026-05-05">05 травня 2026</time>
+            <p>Каталог підтягується з найбільшої відкритої БД ігор.</p>
+          </div>
+        </article>
+        <article class="news-card">
+          <div class="news-thumb" role="img" aria-label="ілюстрація"></div>
+          <div>
+            <h3>Бонусна програма</h3>
+            <time datetime="2026-05-01">01 травня 2026</time>
+            <p>Отримуйте 5% кешбеку гральними картами за кожне замовлення.</p>
+          </div>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <button id="backToTop" type="button" aria-label="Прокрутити нагору" hidden>↑</button>
+
+  <footer class="site">
+    <div class="footer-inner">
+      <div>
+        <h4>GameShop</h4>
+        <p>Інтернет-магазин відеоігор та аксесуарів.</p>
+      </div>
+      <div>
+        <h4>Меню</h4>
+        <ul>
+          <li><a href="/catalog">Каталог</a></li>
+          <li><a href="/cart.html">Кошик</a></li>
+          <li><a href="/profile">Профіль</a></li>
+          <li><a href="/api/docs">API Docs</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Контакти</h4>
+        <ul>
+          <li>support@gameshop.local</li>
+          <li>+38 (000) 000-00-00</li>
+          <li>Київ, КПІ ім. Сікорського</li>
+        </ul>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/js/header.js" defer></script>
+  <script src="/js/cart.js" defer></script>
+  <script src="/js/dynamic.js" defer></script>
+</body>
+</html>

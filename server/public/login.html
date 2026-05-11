@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Вхід — GameShop</title>
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/layout.css">
+  <link rel="stylesheet" href="/css/responsive.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Перейти до основного вмісту</a>
+
+  <header id="siteHeader">
+    <div class="header-inner">
+      <a href="/" class="logo">GAME<span>SHOP</span></a>
+      <nav aria-label="Основна навігація">
+        <ul>
+          <li><a href="/">Головна</a></li>
+          <li><a href="/catalog">Каталог</a></li>
+          <li><a href="/cart.html">Кошик <span id="cartCount">0</span></a></li>
+          <li><a href="/profile">Профіль</a></li>
+        </ul>
+      </nav>
+      <div class="header-actions" id="authBlock"></div>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="auth-wrapper card">
+      <h1>Вхід</h1>
+      <p class="muted">Демо: <code>admin / admin</code> або <code>user / user</code>.</p>
+
+      <form id="loginForm" class="stack mt-16" novalidate>
+        <div class="form-row">
+          <label for="loginUsername">Логін або email</label>
+          <input id="loginUsername" name="username" type="text" required autocomplete="username">
+          <span class="error-text" data-error-for="username"></span>
+        </div>
+        <div class="form-row">
+          <label for="loginPassword">Пароль</label>
+          <input id="loginPassword" name="password" type="password" required autocomplete="current-password">
+          <span class="error-text" data-error-for="password"></span>
+        </div>
+        <button class="btn btn-primary btn-block" type="submit">Увійти</button>
+        <p class="error-text center" id="loginError"></p>
+      </form>
+
+      <p class="muted mt-16 center">Немає акаунту? <a href="/register.html">Зареєструватись</a></p>
+    </section>
+  </main>
+
+  <footer class="site">
+    <div class="footer-inner">
+      <div><h4>GameShop</h4><p>© 2026, КПІ ім. Сікорського</p></div>
+    </div>
+  </footer>
+
+  <script src="/js/header.js" defer></script>
+  <script src="/js/cart.js" defer></script>
+  <script src="/js/validation.js" defer></script>
+</body>
+</html>
