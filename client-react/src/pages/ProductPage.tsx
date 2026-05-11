@@ -15,36 +15,30 @@ export default function ProductPage() {
   const [pLoading, setPLoading] = useState(true);
   const [pError, setPError] = useState<string | null>(null);
 
-  // відгуки — підвантажуються порціями (Лаба 5/6)
   const [reviews, setReviews] = useState<Review[]>([]);
   const [page, setPage] = useState(1);
   const [hasNext, setHasNext] = useState(false);
   const [rLoading, setRLoading] = useState(false);
   const [rError, setRError] = useState<string | null>(null);
 
-  // форма відгуку
   const [rating, setRating] = useState(5);
   const [body, setBody] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [postError, setPostError] = useState<string | null>(null);
 
+  const [activeImg, setActiveImg] = useState(0);
+  const [lightbox, setLightbox] = useState<number | null>(null);
+
   useEffect(() => {
     let cancelled = false;
     setPLoading(true);
     setPError(null);
+    setActiveImg(0);
     fetchProduct(slug)
-      .then((p) => {
-        if (!cancelled) setProduct(p);
-      })
-      .catch((err: Error) => {
-        if (!cancelled) setPError(err.message);
-      })
-      .finally(() => {
-        if (!cancelled) setPLoading(false);
-      });
-    return () => {
-      cancelled = true;
-    };
+      .then((p) => { if (!cancelled) setProduct(p); })
+      .catch((err: Error) => { if (!cancelled) setPError(err.message); })
+      .finally(() => { if (!cancelled) setPLoading(false); });
+    return () => { cancelled = true; };
   }, [slug]);
 
   const loadReviews = useCallback(
@@ -65,9 +59,23 @@ export default function ProductPage() {
     [slug]
   );
 
+  useEffect(() => { loadReviews(1); }, [loadReviews]);
+
+  const allImages = product
+    ? [product.cover ?? '/images/cover-1.svg',
+       ...(product.short_screenshots ?? []).filter((s) => s && s !== product.cover)]
+    : [];
+
   useEffect(() => {
-    loadReviews(1);
-  }, [loadReviews]);
+    if (lightbox === null) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setLightbox(null);
+      if (e.key === 'ArrowRight') setLightbox((i) => (i === null ? null : (i + 1) % allImages.length));
+      if (e.key === 'ArrowLeft') setLightbox((i) => (i === null ? null : (i - 1 + allImages.length) % allImages.length));
+    };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [lightbox, allImages.length]);
 
   async function handleSubmitReview(e: React.FormEvent) {
     e.preventDefault();
@@ -93,9 +101,6 @@ export default function ProductPage() {
   if (pError) return <ErrorBox error={pError} />;
   if (!product) return <ErrorBox error="Гру не знайдено" />;
 
-  const cover = product.cover ?? '/images/cover-1.svg';
-  const screens = product.short_screenshots ?? [];
-
   return (
     <article>
       <ol className="breadcrumbs">
@@ -108,10 +113,30 @@ export default function ProductPage() {
 
       <div className="product-detail">
         <div className="gallery">
-          <img src={cover} alt={product.title} />
-          {screens.slice(0, 3).map((s) => (
-            <img key={s} src={s} alt={`${product.title} screenshot`} />
-          ))}
+          <button
+            type="button"
+            className="gallery-main"
+            onClick={() => setLightbox(activeImg)}
+            aria-label="Відкрити повноекранне фото"
+          >
+            <img src={allImages[activeImg]} alt={product.title} />
+            <span className="gallery-zoom" aria-hidden>⤢</span>
+          </button>
+          {allImages.length > 1 && (
+            <div className="gallery-thumbs">
+              {allImages.map((img, i) => (
+                <button
+                  key={img + i}
+                  type="button"
+                  className={`gallery-thumb ${i === activeImg ? 'active' : ''}`}
+                  onClick={() => setActiveImg(i)}
+                  aria-label={`Скріншот ${i + 1}`}
+                >
+                  <img src={img} alt="" loading="lazy" />
+                </button>
+              ))}
+            </div>
+          )}
         </div>
         <div>
           <div className="card">
@@ -119,6 +144,9 @@ export default function ProductPage() {
               {product.released && <span className="meta-chip">📅 {product.released}</span>}
               {product.metacritic && <span className="meta-chip">Metacritic {product.metacritic}</span>}
               {product.rating > 0 && <span className="meta-chip">★ {product.rating.toFixed(1)}</span>}
+              {product.platforms.slice(0, 3).map((p) => (
+                <span key={p} className="meta-chip">{p}</span>
+              ))}
             </div>
             <ul className="tag-list">
               {product.genres.map((g) => (
@@ -131,7 +159,13 @@ export default function ProductPage() {
                 Додати до кошика
               </button>
             </div>
-            <p>{product.description || 'Опис відсутній.'}</p>
+            {product.description && (
+              <p style={{ whiteSpace: 'pre-line', lineHeight: 1.6 }}>
+                {product.description.length > 1000
+                  ? product.description.slice(0, 1000).trim() + '…'
+                  : product.description}
+              </p>
+            )}
           </div>
 
           <section aria-labelledby="reviewsTitle" className="mt-24">
@@ -143,9 +177,7 @@ export default function ProductPage() {
                   <label>Оцінка</label>
                   <select value={rating} onChange={(e) => setRating(Number(e.target.value))}>
                     {[5, 4, 3, 2, 1].map((n) => (
-                      <option key={n} value={n}>
-                        {'★'.repeat(n)}
-                      </option>
+                      <option key={n} value={n}>{'★'.repeat(n)}</option>
                     ))}
                   </select>
                 </div>
@@ -189,6 +221,50 @@ export default function ProductPage() {
           </section>
         </div>
       </div>
+
+      {lightbox !== null && (
+        <div
+          className="lightbox-overlay"
+          role="dialog"
+          aria-modal="true"
+          onClick={(e) => { if (e.target === e.currentTarget) setLightbox(null); }}
+        >
+          <button
+            className="lightbox-close"
+            type="button"
+            onClick={() => setLightbox(null)}
+            aria-label="Закрити"
+          >
+            ×
+          </button>
+          {allImages.length > 1 && (
+            <button
+              className="lightbox-nav prev"
+              type="button"
+              onClick={() => setLightbox((i) => (i === null ? null : (i - 1 + allImages.length) % allImages.length))}
+              aria-label="Попереднє"
+            >
+              ‹
+            </button>
+          )}
+          <img
+            className="lightbox-image"
+            src={allImages[lightbox]}
+            alt={`${product.title} — фото ${lightbox + 1} з ${allImages.length}`}
+          />
+          {allImages.length > 1 && (
+            <button
+              className="lightbox-nav next"
+              type="button"
+              onClick={() => setLightbox((i) => (i === null ? null : (i + 1) % allImages.length))}
+              aria-label="Наступне"
+            >
+              ›
+            </button>
+          )}
+          <span className="lightbox-counter">{lightbox + 1} / {allImages.length}</span>
+        </div>
+      )}
     </article>
   );
 }

@@ -255,9 +255,19 @@ export async function getProduct(slug: string): Promise<Product | null> {
   if (cached) return cached;
 
   let game: RawgGame | null = null;
+  let screenshots: string[] = [];
   if (HAS_KEY()) {
     try {
       game = await rawgFetch<RawgGame>(`/games/${encodeURIComponent(slug)}`, {});
+      try {
+        const sc = await rawgFetch<{ results: Array<{ image: string }> }>(
+          `/games/${encodeURIComponent(slug)}/screenshots`,
+          {}
+        );
+        screenshots = (sc.results ?? []).map((s) => s.image).filter(Boolean);
+      } catch {
+        // screenshots are non-critical
+      }
     } catch (err) {
       console.warn('[rawg] detail fallback:', (err as Error).message);
     }
@@ -280,6 +290,9 @@ export async function getProduct(slug: string): Promise<Product | null> {
 
   const product = toProduct(game);
   product.description = game.description_raw ?? '';
+  if (screenshots.length > 0) {
+    product.short_screenshots = screenshots.slice(0, 8);
+  }
   writeCache(cacheKey, product);
   return product;
 }

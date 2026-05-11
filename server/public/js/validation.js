@@ -4,6 +4,14 @@
   var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   var PHONE_RE = /^\+?\d{10,13}$/;
 
+  function getReturnUrl(fallback) {
+    try {
+      var p = new URLSearchParams(window.location.search).get('return');
+      if (p && p.indexOf('/') === 0 && p.indexOf('//') !== 0) return p;
+    } catch (e) {}
+    return fallback;
+  }
+
   function showError(form, name, message) {
     var span = form.querySelector('[data-error-for="' + name + '"]');
     if (span) span.textContent = message || '';
@@ -99,7 +107,7 @@
           msg.textContent = success
             ? 'Реєстрація успішна! Зараз перенаправимо…'
             : ('Помилка: ' + (res && res.error || 'невідома'));
-          if (success) setTimeout(function () { window.location.href = '/profile'; }, 800);
+          if (success) setTimeout(function () { window.location.href = getReturnUrl('/profile'); }, 800);
         });
       } else {
         msg.hidden = false;
@@ -122,7 +130,7 @@
       if (window.GameShopAuth && typeof window.GameShopAuth.login === 'function') {
         window.GameShopAuth.login(data).then(function (res) {
           if (res && res.ok) {
-            window.location.href = '/profile';
+            window.location.href = getReturnUrl('/profile');
           } else {
             document.getElementById('loginError').textContent =
               (res && res.error) || 'Невірний логін або пароль';

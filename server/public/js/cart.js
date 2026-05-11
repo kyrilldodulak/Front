@@ -127,38 +127,38 @@
   });
 
   function renderCartPage() {
+    var items = read();
     var listEl = document.getElementById('cartItems');
     var emptyEl = document.getElementById('cartEmpty');
-    if (!listEl) return;
 
-    var items = read();
-
-    if (items.length === 0) {
-      listEl.innerHTML = '';
-      if (emptyEl) emptyEl.hidden = false;
-      var checkoutBtn = document.getElementById('checkoutBtn');
-      if (checkoutBtn) checkoutBtn.setAttribute('aria-disabled', 'true');
-    } else {
-      if (emptyEl) emptyEl.hidden = true;
-      listEl.innerHTML = items.map(function (it) {
-        var safeTitle = escapeHtml(it.title);
-        var img = it.image ? it.image : '/images/cover-1.svg';
-        return (
-          '<article class="cart-item" data-id="' + it.id + '">' +
-            '<img src="' + img + '" alt="' + safeTitle + '">' +
-            '<div class="info">' +
-              '<h3 class="game-title">' + safeTitle + '</h3>' +
-              '<span class="muted">' + it.price + ' ₴ × ' + it.qty + '</span>' +
-            '</div>' +
-            '<div class="qty">' +
-              '<button class="btn btn-ghost" data-qty-action="dec" aria-label="зменшити">−</button>' +
-              '<input type="number" min="1" max="99" value="' + it.qty + '" data-qty-input>' +
-              '<button class="btn btn-ghost" data-qty-action="inc" aria-label="збільшити">+</button>' +
-            '</div>' +
-            '<button class="btn btn-danger remove" data-remove>×</button>' +
-          '</article>'
-        );
-      }).join('');
+    if (listEl) {
+      if (items.length === 0) {
+        listEl.innerHTML = '';
+        if (emptyEl) emptyEl.hidden = false;
+        var checkoutBtn = document.getElementById('checkoutBtn');
+        if (checkoutBtn) checkoutBtn.setAttribute('aria-disabled', 'true');
+      } else {
+        if (emptyEl) emptyEl.hidden = true;
+        listEl.innerHTML = items.map(function (it) {
+          var safeTitle = escapeHtml(it.title);
+          var img = it.image ? it.image : '/images/cover-1.svg';
+          return (
+            '<article class="cart-item" data-id="' + it.id + '">' +
+              '<img src="' + img + '" alt="' + safeTitle + '">' +
+              '<div class="info">' +
+                '<h3 class="game-title">' + safeTitle + '</h3>' +
+                '<span class="muted">' + it.price + ' ₴ × ' + it.qty + '</span>' +
+              '</div>' +
+              '<div class="qty">' +
+                '<button class="btn btn-ghost" data-qty-action="dec" aria-label="зменшити">−</button>' +
+                '<input type="number" min="1" max="99" value="' + it.qty + '" data-qty-input>' +
+                '<button class="btn btn-ghost" data-qty-action="inc" aria-label="збільшити">+</button>' +
+              '</div>' +
+              '<button class="btn btn-danger remove" data-remove>×</button>' +
+            '</article>'
+          );
+        }).join('');
+      }
     }
 
     var sub = totalSum(items);
@@ -172,10 +172,15 @@
 
     var checkoutSummary = document.getElementById('checkoutSummaryItems');
     if (checkoutSummary) {
-      checkoutSummary.innerHTML = items.map(function (it) {
-        return '<div class="row"><span>' + escapeHtml(it.title) + ' × ' + it.qty +
-          '</span><span>' + (it.price * it.qty) + ' ₴</span></div>';
-      }).join('');
+      if (items.length === 0) {
+        checkoutSummary.innerHTML =
+          '<p class="muted" style="padding:8px 0;">Кошик порожній. <a href="/cart.html">Перейти в кошик</a></p>';
+      } else {
+        checkoutSummary.innerHTML = items.map(function (it) {
+          return '<div class="row"><span>' + escapeHtml(it.title) + ' × ' + it.qty +
+            '</span><span>' + (it.price * it.qty) + ' ₴</span></div>';
+        }).join('');
+      }
     }
   }
 

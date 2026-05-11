@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 160" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="bgR" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#102036"/>
+      <stop offset="100%" stop-color="#1f3a5f"/>
+    </linearGradient>
+  </defs>
+  <rect width="240" height="160" fill="url(#bgR)"/>
+  <circle cx="80" cy="80" r="44" fill="none" stroke="#4ec77a" stroke-width="2" opacity="0.85"/>
+  <circle cx="80" cy="80" r="32" fill="none" stroke="#4ec77a" stroke-width="1.5" opacity="0.5"/>
+  <circle cx="80" cy="80" r="20" fill="none" stroke="#4ec77a" stroke-width="1" opacity="0.3"/>
+  <circle cx="80" cy="80" r="4" fill="#4ec77a"/>
+  <line x1="120" y1="80" x2="160" y2="80" stroke="#4ec77a" stroke-width="2" stroke-dasharray="4 4"/>
+  <rect x="160" y="50" width="60" height="60" rx="8" fill="#0d111c" stroke="#ff6b3d" stroke-width="2"/>
+  <path d="M170 70 L180 80 L170 90 M180 80 L210 80" stroke="#ff6b3d" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <text x="190" y="64" fill="#ffb84d" font-family="monospace" font-size="9" text-anchor="middle">API</text>
+  <circle cx="40" cy="50" r="2" fill="#fff" opacity="0.5"/>
+  <circle cx="200" cy="130" r="1.5" fill="#fff" opacity="0.4"/>
+</svg>

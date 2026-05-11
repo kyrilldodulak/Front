@@ -1,12 +1,21 @@
+@media (max-width: 1080px) {
+  footer.site .footer-inner {
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+  }
+  .footer-brand { grid-column: 1 / -1; }
+}
+
 @media (max-width: 960px) {
   main { padding: 20px 16px 56px; }
 
   .hero {
     grid-template-columns: 1fr;
-    padding: 32px 24px;
-    min-height: auto;
+    padding: 28px 22px;
   }
   .hero-image-wrap { display: none; }
+
+  .specs-controls { grid-template-columns: 1fr; }
 
   .cart-wrapper,
   .checkout-wrapper {
@@ -20,37 +29,56 @@
   .pagination-controls { justify-content: center; }
 }
 
-@media (max-width: 720px) {
+@media (max-width: 880px) {
   #siteHeader > .header-inner {
+    height: auto;
     flex-wrap: wrap;
-    gap: 12px;
-    padding: 12px 16px;
+    align-items: center;
+    padding: 10px 16px;
+    gap: 8px;
   }
-  header > nav ul {
-    gap: 4px;
-    flex-wrap: wrap;
+  .logo { padding: 4px 0; }
+  #siteHeader nav {
+    order: 3;
+    width: 100%;
+    overflow-x: auto;
+    border-top: 1px solid var(--border);
+    margin: 6px -16px -10px;
+    padding: 0 16px;
   }
-  header > nav ul li a { padding: 6px 10px; font-size: 13px; }
-  .header-actions { margin-left: 0; width: 100%; justify-content: flex-end; }
+  #siteHeader nav ul li a {
+    padding: 12px 12px;
+    font-size: 13px;
+  }
+  #siteHeader nav ul li a svg {
+    width: 14px;
+    height: 14px;
+  }
+  .header-actions { margin-left: auto; }
 
   .games-grid {
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-    gap: 14px;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 12px;
+  }
+
+  footer.site .footer-inner {
+    grid-template-columns: 1fr;
+    gap: 28px;
   }
 
   .cart-item {
-    grid-template-columns: 60px 1fr;
+    grid-template-columns: 56px 1fr;
     grid-template-areas:
       "img info"
       "qty qty"
       "rm  rm";
   }
-  .cart-item img { grid-area: img; width: 60px; height: 60px; }
+  .cart-item img { grid-area: img; width: 56px; height: 56px; }
   .cart-item .info { grid-area: info; }
   .cart-item .qty { grid-area: qty; }
   .cart-item .remove { grid-area: rm; justify-self: end; }
 
-  .page-btn { min-width: 32px; height: 32px; font-size: 13px; }
+  .page-btn { min-width: 30px; height: 30px; font-size: 12px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

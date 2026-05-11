@@ -2,16 +2,37 @@ import { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { setFilter } from '../store/catalogSlice';
 
-const GENRES = [
-  '', 'action', 'role-playing-games-rpg', 'adventure', 'indie',
-  'roguelike', 'strategy', 'puzzle', 'simulation', 'platformer'
+const GENRES: Array<{ value: string; label: string }> = [
+  { value: '', label: 'All genres' },
+  { value: 'action', label: 'Action' },
+  { value: 'role-playing-games-rpg', label: 'RPG' },
+  { value: 'adventure', label: 'Adventure' },
+  { value: 'shooter', label: 'Shooter' },
+  { value: 'indie', label: 'Indie' },
+  { value: 'racing', label: 'Racing' },
+  { value: 'sports', label: 'Sports' },
+  { value: 'strategy', label: 'Strategy' },
+  { value: 'puzzle', label: 'Puzzle' },
+  { value: 'simulation', label: 'Simulation' },
+  { value: 'platformer', label: 'Platformer' },
+  { value: 'fighting', label: 'Fighting' },
+  { value: 'arcade', label: 'Arcade' },
+  { value: 'family', label: 'Family' },
+  { value: 'massively-multiplayer', label: 'MMO' },
+  { value: 'card', label: 'Card' },
+  { value: 'board-games', label: 'Board Games' },
+  { value: 'educational', label: 'Educational' }
 ];
 const PLATFORMS = [
-  { value: '', label: 'усі' },
+  { value: '', label: 'All platforms' },
   { value: '4', label: 'PC' },
   { value: '187', label: 'PlayStation 5' },
-  { value: '186', label: 'Xbox Series X' },
-  { value: '7', label: 'Nintendo Switch' }
+  { value: '18', label: 'PlayStation 4' },
+  { value: '186', label: 'Xbox Series X/S' },
+  { value: '1', label: 'Xbox One' },
+  { value: '7', label: 'Nintendo Switch' },
+  { value: '3', label: 'iOS' },
+  { value: '21', label: 'Android' }
 ];
 const SEARCH_DEBOUNCE_MS = 350;
 
@@ -47,8 +68,8 @@ export default function Filters() {
           onChange={(e) => dispatch(setFilter({ genre: e.target.value }))}
         >
           {GENRES.map((g) => (
-            <option key={g} value={g}>
-              {g === '' ? 'усі' : g}
+            <option key={g.value} value={g.value}>
+              {g.label}
             </option>
           ))}
         </select>

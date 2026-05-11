@@ -1,4 +1,4 @@
-import { Routes, Route, NavLink, Link, useLocation } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from './store/hooks';
 import { fetchMe, logout } from './store/authSlice';
@@ -7,6 +7,7 @@ import ProductPage from './pages/ProductPage';
 import ProfilePage from './pages/ProfilePage';
 import AdminPage from './pages/AdminPage';
 import NotFoundPage from './pages/NotFoundPage';
+import MainNav from './components/MainNav';
 
 export default function App() {
   const dispatch = useAppDispatch();
@@ -21,30 +22,10 @@ export default function App() {
     <>
       <header id="siteHeader">
         <div className="header-inner">
-          <Link to="/" className="logo">
+          <a href="/" className="logo" aria-label="GameShop, на головну">
             GAME<span>SHOP</span>
-          </Link>
-          <nav aria-label="Основна навігація">
-            <ul>
-              <li>
-                <a href="/">Головна</a>
-              </li>
-              <li>
-                <NavLink to="/catalog">Каталог</NavLink>
-              </li>
-              <li>
-                <a href="/cart.html">Кошик</a>
-              </li>
-              <li>
-                <NavLink to="/profile">Профіль</NavLink>
-              </li>
-              {user?.role === 'admin' && (
-                <li>
-                  <NavLink to="/admin">Адмінка</NavLink>
-                </li>
-              )}
-            </ul>
-          </nav>
+          </a>
+          <MainNav isAdmin={user?.role === 'admin'} />
           <div className="header-actions">
             {user ? (
               <>
