@@ -1,35 +1,49 @@
 .filters {
   display: flex;
-  gap: 12px;
+  gap: 14px;
   flex-wrap: wrap;
   background: var(--panel);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border: 1px solid var(--border);
-  padding: 14px;
-  border-radius: var(--radius);
-  margin-bottom: 18px;
+  padding: 18px;
+  border-radius: var(--radius-lg);
+  margin-bottom: 24px;
+  box-shadow: var(--shadow-sm);
 }
-.filters label { color: var(--muted); font-size: 12px; }
+.filters label {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
 .filters .field {
   display: flex;
   flex-direction: column;
   gap: 6px;
   min-width: 160px;
 }
-.filters input, .filters select { padding: 8px 10px; font-size: 14px; }
-.filters .grow { flex: 1; min-width: 200px; }
+.filters input,
+.filters select {
+  padding: 9px 12px;
+  font-size: 14px;
+}
+.filters .grow { flex: 1; min-width: 220px; }
 
 .loader {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 24px;
-  gap: 10px;
+  padding: 32px;
+  gap: 12px;
   color: var(--muted);
+  font-size: 14px;
 }
 .loader::before {
   content: '';
-  width: 20px;
-  height: 20px;
+  width: 22px;
+  height: 22px;
   border: 2px solid var(--accent);
   border-top-color: transparent;
   border-radius: 50%;
@@ -38,59 +52,120 @@
 @keyframes spin { to { transform: rotate(360deg); } }
 
 .error-box {
-  background: rgba(255, 107, 107, 0.12);
-  border: 1px solid rgba(255, 107, 107, 0.5);
-  color: #ffb3b3;
-  padding: 14px 16px;
+  background: linear-gradient(135deg, rgba(255, 107, 107, 0.18) 0%, rgba(255, 107, 107, 0.08) 100%);
+  border: 1px solid rgba(255, 107, 107, 0.4);
+  color: #ffd5d5;
+  padding: 16px 18px;
   border-radius: var(--radius);
   margin: 16px 0;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
 }
+.error-box strong { color: #ff8e8e; }
 
 .product-detail {
   display: grid;
-  grid-template-columns: 1fr 1.2fr;
-  gap: 28px;
+  grid-template-columns: 1fr 1.3fr;
+  gap: 32px;
   align-items: start;
 }
 @media (max-width: 920px) {
   .product-detail { grid-template-columns: 1fr; }
 }
 
+.product-detail .gallery {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
 .product-detail .gallery img {
   width: 100%;
   border-radius: var(--radius);
-  margin-bottom: 8px;
   background: var(--panel);
+  box-shadow: var(--shadow);
+  transition: transform 0.3s;
+}
+.product-detail .gallery img:hover { transform: scale(1.02); }
+.product-detail .gallery img:first-child {
+  border-radius: var(--radius-lg);
+}
+
+.product-meta {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+.product-meta .meta-chip {
+  background: var(--panel-2);
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+}
+.product-price-block {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 12px 0 18px;
+}
+.product-price-block .price {
+  font-size: 32px;
 }
 
 .review {
   border-left: 3px solid var(--accent);
-  padding: 8px 12px;
+  padding: 12px 16px;
   margin-bottom: 12px;
-  background: var(--panel-2);
-  border-radius: 0 8px 8px 0;
+  background: var(--panel);
+  backdrop-filter: blur(8px);
+  border-radius: 0 12px 12px 0;
+  border-top: 1px solid var(--border);
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
 }
 .review h4 {
   font-size: 14px;
-  margin-bottom: 4px;
+  margin-bottom: 6px;
   display: flex;
-  gap: 8px;
+  gap: 10px;
   align-items: baseline;
 }
-.review .stars { color: var(--accent-2); }
+.review .stars {
+  color: var(--accent-2);
+  letter-spacing: 1px;
+  font-size: 13px;
+}
 .review time { color: var(--muted); font-size: 12px; margin-left: auto; }
+.review p { font-size: 14px; }
 
-.admin-tabs { display: flex; gap: 12px; margin-bottom: 16px; }
-.admin-tabs a {
+.admin-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
   background: var(--panel);
-  padding: 8px 16px;
-  border-radius: 8px;
+  backdrop-filter: blur(8px);
+  padding: 6px;
+  border-radius: var(--radius);
   border: 1px solid var(--border);
+  width: fit-content;
 }
+.admin-tabs a {
+  padding: 8px 18px;
+  border-radius: 8px;
+  color: var(--text-dim);
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.15s;
+}
+.admin-tabs a:hover { color: var(--text); background: rgba(255, 255, 255, 0.04); }
 .admin-tabs a.active {
-  background: var(--accent);
+  background: var(--gradient-1);
   color: #fff;
-  border-color: var(--accent);
+  box-shadow: 0 4px 14px rgba(255, 91, 58, 0.35);
 }
-
-.sentinel { height: 1px; }

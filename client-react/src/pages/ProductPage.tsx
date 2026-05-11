@@ -115,23 +115,23 @@ export default function ProductPage() {
         </div>
         <div>
           <div className="card">
-            <p className="muted">
-              {product.released ?? 'дата невідома'}
-              {product.metacritic ? ` · Metacritic ${product.metacritic}` : ''}
-              {product.rating ? ` · Користувачі ${product.rating.toFixed(1)}` : ''}
-            </p>
-            <h2 style={{ marginTop: 12 }}>
-              <span className="price">{product.price} ₴</span>
-            </h2>
-            <button className="btn btn-primary mt-16" onClick={() => addToCart(product)}>
-              Додати до кошика
-            </button>
-            <ul className="tag-list mt-16">
+            <div className="product-meta">
+              {product.released && <span className="meta-chip">📅 {product.released}</span>}
+              {product.metacritic && <span className="meta-chip">Metacritic {product.metacritic}</span>}
+              {product.rating > 0 && <span className="meta-chip">★ {product.rating.toFixed(1)}</span>}
+            </div>
+            <ul className="tag-list">
               {product.genres.map((g) => (
                 <li key={g}>{g}</li>
               ))}
             </ul>
-            <p className="mt-24">{product.description || 'Опис відсутній.'}</p>
+            <div className="product-price-block">
+              <span className="price">{product.price} ₴</span>
+              <button className="btn btn-primary" onClick={() => addToCart(product)}>
+                Додати до кошика
+              </button>
+            </div>
+            <p>{product.description || 'Опис відсутній.'}</p>
           </div>
 
           <section aria-labelledby="reviewsTitle" className="mt-24">
