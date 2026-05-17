@@ -21,11 +21,18 @@
   </header>
 
   <main id="main">
-    <section class="auth-wrapper card">
-      <h1>Вхід</h1>
-      <p class="muted">Демо: <code>admin / admin</code> або <code>user / user</code>.</p>
+    <section class="auth-box" aria-labelledby="loginTitle">
+      <header class="auth-head">
+        <h1 id="loginTitle">Вхід</h1>
+        <p class="muted">Введи логін і пароль, щоб продовжити.</p>
+      </header>
 
-      <form id="loginForm" class="stack mt-16" novalidate>
+      <div class="auth-demo">
+        <button type="button" class="auth-demo-chip" data-fill data-username="admin" data-password="admin">admin</button>
+        <button type="button" class="auth-demo-chip" data-fill data-username="user" data-password="user">user</button>
+      </div>
+
+      <form id="loginForm" class="stack" novalidate>
         <div class="form-row">
           <label for="loginUsername">Логін або email</label>
           <input id="loginUsername" name="username" type="text" required autocomplete="username">
@@ -33,14 +40,19 @@
         </div>
         <div class="form-row">
           <label for="loginPassword">Пароль</label>
-          <input id="loginPassword" name="password" type="password" required autocomplete="current-password">
+          <div class="auth-password">
+            <input id="loginPassword" name="password" type="password" required autocomplete="current-password">
+            <button type="button" class="auth-eye" data-toggle-password aria-label="Показати пароль">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
           <span class="error-text" data-error-for="password"></span>
         </div>
         <button class="btn btn-primary btn-block" type="submit">Увійти</button>
         <p class="error-text center" id="loginError"></p>
       </form>
 
-      <p class="muted mt-16 center">Немає акаунту? <a href="/register.html">Зареєструватись</a></p>
+      <p class="auth-switch">Немає акаунту? <a href="/register.html">Зареєструватись</a></p>
     </section>
   </main>
 
@@ -52,6 +64,7 @@
 
   <script src="/js/header.js" defer></script>
   <script src="/js/cart.js" defer></script>
+  <script src="/js/auth-ui.js" defer></script>
   <script src="/js/validation.js" defer></script>
 </body>
 </html>

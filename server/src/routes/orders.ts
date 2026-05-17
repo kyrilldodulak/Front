@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { z } from 'zod';
+import crypto from 'node:crypto';
 import { db } from '../db.js';
 import { requireAuth, requireAdmin } from '../auth.js';
 
@@ -14,13 +15,22 @@ const OrderSchema = z.object({
   customer: z.object({
     fullName: z.string().min(2),
     email: z.string().email(),
-    phone: z.string().min(10),
-    city: z.string().min(2),
-    address: z.string().min(2),
     comment: z.string().max(500).optional()
   }),
   items: z.array(ItemSchema).min(1)
 });
+
+const KEY_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+function generateActivationKey(): string {
+  const groups: string[] = [];
+  for (let g = 0; g < 4; g++) {
+    let group = '';
+    const bytes = crypto.randomBytes(4);
+    for (let i = 0; i < 4; i++) group += KEY_ALPHABET[bytes[i] % KEY_ALPHABET.length];
+    groups.push(group);
+  }
+  return groups.join('-');
+}
 
 const STATUSES = ['new', 'paid', 'shipped', 'cancelled'] as const;
 
@@ -53,17 +63,21 @@ ordersRouter.post('/', requireAuth, (req, res, next) => {
           user.id,
           data.customer.fullName,
           data.customer.email,
-          data.customer.phone,
-          data.customer.city,
-          data.customer.address,
+          '',
+          '',
+          '',
           data.customer.comment ?? null,
           total
         );
       const orderId = Number(result.lastInsertRowid);
       const insertItem = db.prepare(
-        'INSERT INTO order_items (order_id, product_id, title, price, qty) VALUES (?, ?, ?, ?, ?)'
+        'INSERT INTO order_items (order_id, product_id, title, price, qty, activation_key) VALUES (?, ?, ?, ?, ?, ?)'
       );
-      for (const it of data.items) insertItem.run(orderId, it.id, it.title, it.price, it.qty);
+      for (const it of data.items) {
+        for (let i = 0; i < it.qty; i++) {
+          insertItem.run(orderId, it.id, it.title, it.price, 1, generateActivationKey());
+        }
+      }
       return orderId;
     });
 
@@ -76,7 +90,11 @@ ordersRouter.post('/', requireAuth, (req, res, next) => {
 export const adminOrdersRouter = Router();
 
 adminOrdersRouter.get('/', requireAdmin, (_req, res) => {
-  res.json(db.prepare('SELECT * FROM orders ORDER BY created_at DESC').all());
+  const orders = db.prepare('SELECT * FROM orders ORDER BY created_at DESC').all() as Array<{ id: number }>;
+  for (const o of orders as Array<{ id: number; items?: unknown[] }>) {
+    o.items = db.prepare('SELECT * FROM order_items WHERE order_id = ?').all(o.id);
+  }
+  res.json(orders);
 });
 
 adminOrdersRouter.patch('/:id', requireAdmin, (req, res) => {

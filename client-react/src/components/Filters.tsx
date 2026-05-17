@@ -95,10 +95,10 @@ export default function Filters() {
           value={filters.ordering}
           onChange={(e) => dispatch(setFilter({ ordering: e.target.value }))}
         >
-          <option value="-rating">за рейтингом</option>
-          <option value="-released">за датою</option>
-          <option value="name">за назвою</option>
-          <option value="-metacritic">за Metacritic</option>
+          <option value="-rating">By rating</option>
+          <option value="-released">By release date</option>
+          <option value="name">By name</option>
+          <option value="-metacritic">By Metacritic</option>
         </select>
       </div>
     </div>

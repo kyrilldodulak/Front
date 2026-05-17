@@ -27,6 +27,7 @@ import { uploadRouter } from './routes/upload.js';
 import { adminRouter } from './routes/admin.js';
 import { swaggerRouter } from './swagger.js';
 import { ssrHandler } from './ssr.js';
+import { listLocalPrices } from './rawg.js';
 import { errorHandler, notFoundJson } from './middleware/errorHandler.js';
 
 const publicDir = path.resolve(__dirnameInit, '..', 'public');
@@ -58,6 +59,21 @@ app.use('/api/docs', swaggerRouter);
 
 const SPA_ROUTES = ['/catalog', '/product/:slug', '/profile', '/profile/*', '/admin', '/admin/*'];
 for (const r of SPA_ROUTES) app.get(r, ssrHandler(isDev));
+
+app.get('/', (_req, res) => {
+  const indexPath = path.join(publicDir, 'index.html');
+  let html = fs.readFileSync(indexPath, 'utf8');
+  const prices = listLocalPrices();
+  const priceMap: Record<string, number> = {};
+  for (const p of prices) priceMap[p.product_id] = p.price;
+  html = html.replace(
+    '</head>',
+    `<script>window.__HOME_PRICES__=${JSON.stringify(priceMap)};</script>\n</head>`
+  );
+  res.setHeader('Content-Type', 'text/html; charset=utf-8');
+  res.setHeader('Cache-Control', 'no-store');
+  res.send(html);
+});
 
 app.use(
   express.static(publicDir, {

@@ -4,6 +4,7 @@ import { useAppSelector } from '../store/hooks';
 import Loader from '../components/Loader';
 import ErrorBox from '../components/ErrorBox';
 import { listAllOrders, updateOrderStatus, type Order } from '../api/orders';
+import { OrderModal } from './ProfilePage';
 
 type LocalPrice = { product_id: string; price: number };
 type AdminUser = {
@@ -19,6 +20,8 @@ function PricesTab() {
   const [items, setItems] = useState<LocalPrice[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [edited, setEdited] = useState<Record<string, string>>({});
+  const [saving, setSaving] = useState<Record<string, boolean>>({});
   const [newSlug, setNewSlug] = useState('');
   const [newPrice, setNewPrice] = useState('');
 
@@ -26,36 +29,54 @@ function PricesTab() {
     setLoading(true);
     fetch('/api/admin/prices', { credentials: 'include' })
       .then((r) => (r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`))))
-      .then(setItems)
-      .catch((e) => setError(e.message))
+      .then((data: LocalPrice[]) => {
+        setItems(data);
+        setEdited({});
+      })
+      .catch((e: Error) => setError(e.message))
       .finally(() => setLoading(false));
   }
 
   useEffect(reload, []);
 
-  async function save(slug: string, price: number) {
+  async function save(slug: string) {
+    const raw = edited[slug];
+    const price = Number(raw);
+    if (!price || price < 1) return;
+    setSaving((s) => ({ ...s, [slug]: true }));
     await fetch(`/api/admin/prices/${encodeURIComponent(slug)}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
       body: JSON.stringify({ price })
     });
-    reload();
+    setSaving((s) => ({ ...s, [slug]: false }));
+    setItems((prev) => prev.map((p) => p.product_id === slug ? { ...p, price } : p));
+    setEdited((e) => { const n = { ...e }; delete n[slug]; return n; });
   }
+
   async function remove(slug: string) {
     if (!confirm(`Видалити ціну для ${slug}?`)) return;
     await fetch(`/api/admin/prices/${encodeURIComponent(slug)}`, {
       method: 'DELETE',
       credentials: 'include'
     });
-    reload();
+    setItems((prev) => prev.filter((p) => p.product_id !== slug));
   }
+
   async function add(e: React.FormEvent) {
     e.preventDefault();
-    if (!newSlug || !newPrice) return;
-    await save(newSlug, Number(newPrice));
+    const price = Number(newPrice);
+    if (!newSlug || !price) return;
+    await fetch(`/api/admin/prices/${encodeURIComponent(newSlug)}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ price })
+    });
     setNewSlug('');
     setNewPrice('');
+    reload();
   }
 
   if (loading) return <Loader />;
@@ -73,29 +94,36 @@ function PricesTab() {
           </tr>
         </thead>
         <tbody>
-          {items.map((p) => (
-            <tr key={p.product_id}>
-              <td>
-                <code>{p.product_id}</code>
-              </td>
-              <td>
-                <input
-                  type="number"
-                  defaultValue={p.price}
-                  onBlur={(e) => {
-                    const v = Number(e.target.value);
-                    if (v && v !== p.price) save(p.product_id, v);
-                  }}
-                  style={{ width: 100 }}
-                />
-              </td>
-              <td>
-                <button className="btn btn-danger" onClick={() => remove(p.product_id)}>
-                  Видалити
-                </button>
-              </td>
-            </tr>
-          ))}
+          {items.map((p) => {
+            const val = edited[p.product_id] ?? String(p.price);
+            const isDirty = edited[p.product_id] !== undefined && edited[p.product_id] !== String(p.price);
+            return (
+              <tr key={p.product_id}>
+                <td><code>{p.product_id}</code></td>
+                <td>
+                  <input
+                    type="number"
+                    min="1"
+                    value={val}
+                    onChange={(e) => setEdited((prev) => ({ ...prev, [p.product_id]: e.target.value }))}
+                    style={{ width: 110 }}
+                  />
+                </td>
+                <td style={{ display: 'flex', gap: 8 }}>
+                  <button
+                    className="btn btn-ghost"
+                    disabled={!isDirty || saving[p.product_id]}
+                    onClick={() => save(p.product_id)}
+                  >
+                    {saving[p.product_id] ? '…' : 'Зберегти'}
+                  </button>
+                  <button className="btn btn-danger" onClick={() => remove(p.product_id)}>
+                    Видалити
+                  </button>
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
       <form className="flex gap-12 mt-16" onSubmit={add}>
@@ -119,10 +147,18 @@ function PricesTab() {
   );
 }
 
+const STATUS_LABELS: Record<string, string> = {
+  new: 'Нове',
+  paid: 'Оплачено',
+  shipped: 'Відправлено',
+  cancelled: 'Скасовано'
+};
+
 function OrdersTab() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedId, setSelectedId] = useState<number | null>(null);
 
   function reload() {
     setLoading(true);
@@ -133,49 +169,62 @@ function OrdersTab() {
   }
   useEffect(reload, []);
 
+  async function handleStatusChange(id: number, status: Order['status']) {
+    await updateOrderStatus(id, status);
+    setOrders((prev) => prev.map((o) => (o.id === id ? { ...o, status } : o)));
+  }
+
+  const selected = selectedId !== null ? orders.find((o) => o.id === selectedId) ?? null : null;
+
   if (loading) return <Loader />;
   if (error) return <ErrorBox error={error} onRetry={reload} />;
 
   return (
-    <div className="card">
-      <h3>Замовлення</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>№</th>
-            <th>Дата</th>
-            <th>Клієнт</th>
-            <th>Сума</th>
-            <th>Статус</th>
-          </tr>
-        </thead>
-        <tbody>
-          {orders.map((o) => (
-            <tr key={o.id}>
-              <td>#{o.id}</td>
-              <td>{new Date(o.created_at).toLocaleString('uk-UA')}</td>
-              <td>
-                {o.full_name}
-                <br />
-                <small className="muted">{o.email}</small>
-              </td>
-              <td>{o.total} ₴</td>
-              <td>
-                <select
-                  value={o.status}
-                  onChange={(e) => updateOrderStatus(o.id, e.target.value as Order['status']).then(reload)}
-                >
-                  <option value="new">new</option>
-                  <option value="paid">paid</option>
-                  <option value="shipped">shipped</option>
-                  <option value="cancelled">cancelled</option>
-                </select>
-              </td>
+    <>
+      {selected && <OrderModal order={selected} onClose={() => setSelectedId(null)} isAdmin />}
+      <div className="card" style={{ padding: 0 }}>
+        <table>
+          <thead>
+            <tr>
+              <th>№</th>
+              <th>Дата</th>
+              <th>Клієнт</th>
+              <th>Сума</th>
+              <th>Статус</th>
+              <th></th>
             </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+          </thead>
+          <tbody>
+            {orders.map((o) => (
+              <tr key={o.id}>
+                <td>#{o.id}</td>
+                <td>{new Date(o.created_at).toLocaleString('uk-UA')}</td>
+                <td>
+                  {o.full_name}<br />
+                  <small className="muted">{o.email}</small>
+                </td>
+                <td>{o.total} ₴</td>
+                <td>
+                  <select
+                    value={o.status}
+                    onChange={(e) => handleStatusChange(o.id, e.target.value as Order['status'])}
+                  >
+                    {Object.entries(STATUS_LABELS).map(([val, label]) => (
+                      <option key={val} value={val}>{label}</option>
+                    ))}
+                  </select>
+                </td>
+                <td>
+                  <button type="button" className="btn btn-ghost" onClick={() => setSelectedId(o.id)}>
+                    Деталі
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </>
   );
 }
 
@@ -254,7 +303,7 @@ export default function AdminPage() {
   }
   return (
     <section>
-      <h1>Адміністративна панель</h1>
+      <h1>Адмін-панель</h1>
       <nav className="admin-tabs">
         <NavLink to="/admin" end className={({ isActive }) => (isActive ? 'active' : '')}>
           Ціни

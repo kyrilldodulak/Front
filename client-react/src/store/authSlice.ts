@@ -14,7 +14,7 @@ type AuthState = {
   loading: boolean;
 };
 
-const initialState: AuthState = { user: null, loading: false };
+const initialState: AuthState = { user: null, loading: true };
 
 export const fetchMe = createAsyncThunk('auth/me', async () => authApi.me());
 export const logout = createAsyncThunk('auth/logout', async () => {

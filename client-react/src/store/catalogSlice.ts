@@ -75,7 +75,13 @@ const slice = createSlice({
       })
       .addCase(fetchCatalog.fulfilled, (state, action) => {
         state.loading = false;
-        state.items = action.payload.results;
+        if (state.page === 1) {
+          state.items = action.payload.results;
+        } else {
+          const existing = new Set(state.items.map((p) => p.id));
+          const fresh = action.payload.results.filter((p) => !existing.has(p.id));
+          state.items = [...state.items, ...fresh];
+        }
         state.count = action.payload.count;
         state.hasNext = action.payload.hasNext;
       })

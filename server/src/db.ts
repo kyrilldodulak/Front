@@ -1,5 +1,6 @@
 import Database from 'better-sqlite3';
 import bcrypt from 'bcrypt';
+import crypto from 'node:crypto';
 import path from 'node:path';
 import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -94,6 +95,57 @@ const DEFAULT_PRICES: Array<[string, number]> = [
 
 function migrate() {
   db.exec(SCHEMA);
+  ensureOrderItemColumn('activation_key', 'TEXT');
+  backfillActivationKeys();
+}
+
+function ensureOrderItemColumn(name: string, type: string) {
+  const cols = db.prepare("PRAGMA table_info(order_items)").all() as Array<{ name: string }>;
+  if (!cols.some((c) => c.name === name)) {
+    db.exec(`ALTER TABLE order_items ADD COLUMN ${name} ${type}`);
+  }
+}
+
+const KEY_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+function generateActivationKey(): string {
+  const groups: string[] = [];
+  for (let g = 0; g < 4; g++) {
+    let group = '';
+    const bytes = crypto.randomBytes(4);
+    for (let i = 0; i < 4; i++) group += KEY_ALPHABET[bytes[i] % KEY_ALPHABET.length];
+    groups.push(group);
+  }
+  return groups.join('-');
+}
+
+function backfillActivationKeys() {
+  const rows = db
+    .prepare(
+      `SELECT id, order_id, product_id, title, price, qty
+         FROM order_items
+        WHERE activation_key IS NULL OR activation_key = ''`
+    )
+    .all() as Array<{ id: number; order_id: number; product_id: string; title: string; price: number; qty: number }>;
+  if (rows.length === 0) return;
+
+  const updateOne = db.prepare(
+    'UPDATE order_items SET qty = 1, activation_key = ? WHERE id = ?'
+  );
+  const insertExtra = db.prepare(
+    'INSERT INTO order_items (order_id, product_id, title, price, qty, activation_key) VALUES (?, ?, ?, ?, 1, ?)'
+  );
+
+  const tx = db.transaction(() => {
+    for (const row of rows) {
+      const qty = Math.max(1, Number(row.qty) || 1);
+      updateOne.run(generateActivationKey(), row.id);
+      for (let i = 1; i < qty; i++) {
+        insertExtra.run(row.order_id, row.product_id, row.title, row.price, generateActivationKey());
+      }
+    }
+  });
+  tx();
+  console.log(`[migrate] backfilled activation keys for ${rows.length} legacy order_items rows`);
 }
 
 function seed() {

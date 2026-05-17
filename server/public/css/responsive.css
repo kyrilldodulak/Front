@@ -23,10 +23,6 @@
   }
   .summary { position: static; }
 
-  .pagination { flex-direction: column; align-items: stretch; }
-  .pagination-info,
-  .page-size { text-align: center; justify-content: center; }
-  .pagination-controls { justify-content: center; }
 }
 
 @media (max-width: 880px) {
@@ -60,7 +56,6 @@
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
     gap: 12px;
   }
-
   footer.site .footer-inner {
     grid-template-columns: 1fr;
     gap: 28px;
@@ -78,7 +73,6 @@
   .cart-item .qty { grid-area: qty; }
   .cart-item .remove { grid-area: rm; justify-self: end; }
 
-  .page-btn { min-width: 30px; height: 30px; font-size: 12px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

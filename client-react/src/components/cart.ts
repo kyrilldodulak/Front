@@ -1,6 +1,12 @@
 import type { Product } from '../api/products';
 
-const STORAGE_KEY = 'gameshop.cart.v1';
+const COUNT_CACHE_KEY = 'gameshop.cart.count';
+
+function makeKey(username: string | null) {
+  return `gameshop.cart.v1:${username || 'guest'}`;
+}
+
+let STORAGE_KEY = makeKey(null);
 
 type StoredItem = {
   id: string;
@@ -21,9 +27,37 @@ function read(): StoredItem[] {
   }
 }
 
+export function getCartItems(): StoredItem[] {
+  return read();
+}
+
+export function getCartTotalQty(): number {
+  return read().reduce((s, it) => s + (Number(it.qty) || 0), 0);
+}
+
+export function getCartStorageKey(): string {
+  return STORAGE_KEY;
+}
+
 function write(items: StoredItem[]) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+  const totalQty = items.reduce((s, it) => s + (Number(it.qty) || 0), 0);
+  try {
+    localStorage.setItem(COUNT_CACHE_KEY, String(totalQty));
+  } catch {
+    /* ignore */
+  }
   document.dispatchEvent(new CustomEvent('cart:changed', { detail: items }));
+}
+
+export function getCachedCartCount(): number {
+  try {
+    const v = localStorage.getItem(COUNT_CACHE_KEY);
+    const n = v ? Number(v) : 0;
+    return Number.isFinite(n) && n >= 0 ? n : 0;
+  } catch {
+    return 0;
+  }
 }
 
 function flash(message: string) {
@@ -32,7 +66,7 @@ function flash(message: string) {
   el.setAttribute('role', 'status');
   el.style.cssText =
     'position:fixed;top:80px;right:24px;background:#51cf66;color:#0f1420;' +
-    'padding:10px 16px;border-radius:8px;font-weight:600;box-shadow:0 8px 20px rgba(0,0,0,0.3);' +
+    'padding:10px 16px;border-radius:8px;font-weight:600;' +
     'z-index:1000;opacity:0;transition:opacity 0.25s,transform 0.25s;transform:translateY(-8px);';
   document.body.appendChild(el);
   requestAnimationFrame(() => {
@@ -44,6 +78,31 @@ function flash(message: string) {
     el.style.transform = 'translateY(-8px)';
     setTimeout(() => el.remove(), 300);
   }, 1800);
+}
+
+export function switchCartUser(username: string | null) {
+  const oldKey = STORAGE_KEY;
+  const newKey = makeKey(username);
+  if (oldKey === newKey) return;
+
+  const prevItems = read();
+  STORAGE_KEY = newKey;
+
+  if (prevItems.length > 0 && oldKey === makeKey(null)) {
+    const nextItems = read();
+    for (const item of prevItems) {
+      const existing = nextItems.find((i) => i.id === item.id);
+      if (existing) existing.qty += item.qty;
+      else nextItems.push(item);
+    }
+    localStorage.removeItem(oldKey);
+    write(nextItems);
+  } else {
+    const nextItems = read();
+    const totalQty = nextItems.reduce((s, it) => s + (Number(it.qty) || 0), 0);
+    try { localStorage.setItem(COUNT_CACHE_KEY, String(totalQty)); } catch { /* ignore */ }
+    document.dispatchEvent(new CustomEvent('cart:changed', { detail: nextItems }));
+  }
 }
 
 export function addToCart(product: Product, qty = 1) {

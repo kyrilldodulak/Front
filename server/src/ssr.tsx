@@ -26,19 +26,25 @@ function getEntryAssets(): { js: string; cssFiles: string[] } | null {
   return { js: `/app/${entry.file}`, cssFiles: (entry.css ?? []).map((c) => `/app/${c}`) };
 }
 
-function pickTheme(req: Request): 'light' | 'dark' {
-  const cookie = req.cookies?.theme as string | undefined;
-  if (cookie === 'light' || cookie === 'dark') return cookie;
-  const hour = new Date().getHours();
-  return hour < 7 || hour >= 20 ? 'dark' : 'dark';
-}
-
 function escapeForInline(json: string): string {
   return json.replace(/</g, '\\u003c');
 }
 
+function formatServerLine(user: PublicUser | null): string {
+  const now = new Date();
+  const hh = String(now.getHours()).padStart(2, '0');
+  const mm = String(now.getMinutes()).padStart(2, '0');
+  const partOfDay = now.getHours() < 5 ? 'ніч'
+    : now.getHours() < 12 ? 'ранок'
+    : now.getHours() < 18 ? 'день'
+    : 'вечір';
+  const who = user ? user.username : 'гість';
+  return `Час сервера ${hh}:${mm} · ${partOfDay} · ${who}`;
+}
+
 function renderSkeleton(user: PublicUser | null): string {
   const greeting = user ? `Привіт, ${user.username}` : 'Гість, увійдіть для відгуків';
+  const serverLine = formatServerLine(user);
   return `
     <header id="siteHeader">
       <div class="header-inner">
@@ -55,6 +61,7 @@ function renderSkeleton(user: PublicUser | null): string {
       </div>
     </header>
     <main id="main">
+      <p class="ssr-server-line" data-ssr="server-line">${serverLine}</p>
       <div class="loader" role="status">Завантаження інтерфейсу…</div>
     </main>
   `;
@@ -63,27 +70,33 @@ function renderSkeleton(user: PublicUser | null): string {
 function renderShell(opts: {
   title: string;
   user: PublicUser | null;
-  theme: 'light' | 'dark';
   preloaded?: unknown;
   isDev: boolean;
 }): string {
-  const assets = getEntryAssets();
+  const assets = opts.isDev ? null : getEntryAssets();
   const cssLinks = assets?.cssFiles.map((href) => `<link rel="stylesheet" href="${href}">`).join('') ?? '';
   const scriptTag = assets
     ? `<script type="module" src="${assets.js}"></script>`
     : opts.isDev
       ? `
-      <script type="module" src="http://localhost:5173/@vite/client"></script>
-      <script type="module" src="http://localhost:5173/src/main.tsx"></script>
+      <script type="module">
+        import RefreshRuntime from "http://127.0.0.1:5173/app/@react-refresh"
+        RefreshRuntime.injectIntoGlobalHook(window)
+        window.$RefreshReg$ = () => {}
+        window.$RefreshSig$ = () => (type) => type
+        window.__vite_plugin_react_preamble_installed__ = true
+      </script>
+      <script type="module" src="http://127.0.0.1:5173/app/@vite/client"></script>
+      <script type="module" src="http://127.0.0.1:5173/app/src/main.tsx"></script>
     `
-      : '<!-- React app не зібрано: запустіть `npm run build` -->';
+      : '';
 
   const initial = opts.preloaded
     ? `<script>window.__INITIAL_STATE__=${escapeForInline(JSON.stringify(opts.preloaded))};</script>`
     : '';
 
   return `<!DOCTYPE html>
-<html lang="uk" data-theme="${opts.theme}">
+<html lang="uk">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -93,11 +106,6 @@ function renderShell(opts: {
     <link rel="stylesheet" href="/css/layout.css" />
     <link rel="stylesheet" href="/css/responsive.css" />
     ${cssLinks}
-    <style>
-      html[data-theme="dark"]  { background: #0f1420; color: #e6e9f2; }
-      html[data-theme="light"] { background: #f5f6fa; color: #1a2030; }
-      html[data-theme="light"] body, html[data-theme="light"] main { background: #f5f6fa; color: #1a2030; }
-    </style>
   </head>
   <body>
     <div id="root">${renderSkeleton(opts.user)}</div>
@@ -109,15 +117,13 @@ function renderShell(opts: {
 
 export function ssrHandler(isDev: boolean) {
   return (req: Request, res: Response) => {
-    const theme = pickTheme(req);
     const user = req.user ?? null;
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
     res.send(
       renderShell({
         title: 'GameShop',
         user,
-        theme,
-        preloaded: { user, theme, time: new Date().toISOString(), path: req.path },
+        preloaded: { user, time: new Date().toISOString(), path: req.path },
         isDev
       })
     );

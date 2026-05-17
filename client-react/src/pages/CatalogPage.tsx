@@ -1,18 +1,21 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
-import { fetchCatalog, setPage, setPageSize } from '../store/catalogSlice';
+import { fetchCatalog, setPage } from '../store/catalogSlice';
 import GameCard from '../components/GameCard';
 import Filters from '../components/Filters';
-import Pagination from '../components/Pagination';
 import Loader from '../components/Loader';
 import ErrorBox from '../components/ErrorBox';
 import { addToCart } from '../components/cart';
 
 export default function CatalogPage() {
   const dispatch = useAppDispatch();
-  const { items, loading, error, count, page, pageSize, filters } = useAppSelector(
+  const { items, loading, error, count, page, pageSize, hasNext, filters } = useAppSelector(
     (s) => s.catalog
   );
+
+  const sentinelRef = useRef<HTMLDivElement | null>(null);
+  const loadingRef = useRef(loading);
+  loadingRef.current = loading;
 
   useEffect(() => {
     dispatch(fetchCatalog());
@@ -26,10 +29,23 @@ export default function CatalogPage() {
     filters.ordering
   ]);
 
-  function changePage(next: number) {
-    dispatch(setPage(next));
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
+  useEffect(() => {
+    const node = sentinelRef.current;
+    if (!node) return;
+    if (!hasNext) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
+        if (entry.isIntersecting && !loadingRef.current && hasNext) {
+          dispatch(setPage(page + 1));
+        }
+      },
+      { rootMargin: '300px 0px' }
+    );
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [dispatch, page, hasNext]);
 
   return (
     <section aria-labelledby="catalogTitle" className="catalog">
@@ -80,13 +96,19 @@ export default function CatalogPage() {
         </div>
       )}
 
-      <Pagination
-        page={page}
-        pageSize={pageSize}
-        count={count}
-        onPage={changePage}
-        onPageSize={(s) => dispatch(setPageSize(s))}
-      />
+      {!error && hasNext && (
+        <div
+          ref={sentinelRef}
+          className="catalog-sentinel"
+          aria-hidden="true"
+        />
+      )}
+
+      {!loading && !hasNext && items.length > 0 && (
+        <p className="catalog-end muted">
+          Це всі результати ({count.toLocaleString('uk-UA')}).
+        </p>
+      )}
     </section>
   );
 }

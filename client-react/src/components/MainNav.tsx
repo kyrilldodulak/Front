@@ -1,5 +1,4 @@
 import { NavLink } from 'react-router-dom';
-import { useEffect, useState } from 'react';
 
 type NavItem = {
   to: string;
@@ -7,7 +6,6 @@ type NavItem = {
   external?: boolean;
   icon: JSX.Element;
   end?: boolean;
-  hasCounter?: boolean;
 };
 
 const HOME_ICON = (
@@ -48,38 +46,13 @@ const ADMIN_ICON = (
   </svg>
 );
 
-function readCartCount() {
-  try {
-    const raw = localStorage.getItem('gameshop.cart.v1');
-    if (!raw) return 0;
-    const items = JSON.parse(raw);
-    if (!Array.isArray(items)) return 0;
-    return items.reduce((s, it) => s + (Number(it.qty) || 0), 0);
-  } catch {
-    return 0;
-  }
-}
-
 export default function MainNav({ isAdmin }: { isAdmin: boolean }) {
-  const [cartCount, setCartCount] = useState(0);
-
-  useEffect(() => {
-    setCartCount(readCartCount());
-    const sync = () => setCartCount(readCartCount());
-    document.addEventListener('cart:changed', sync);
-    window.addEventListener('storage', sync);
-    return () => {
-      document.removeEventListener('cart:changed', sync);
-      window.removeEventListener('storage', sync);
-    };
-  }, []);
-
   const items: NavItem[] = [
     { to: '/', label: 'Головна', external: true, icon: HOME_ICON },
     { to: '/catalog', label: 'Каталог', icon: CATALOG_ICON },
-    { to: '/cart.html', label: 'Кошик', external: true, icon: CART_ICON, hasCounter: true },
+    { to: '/cart.html', label: 'Кошик', external: true, icon: CART_ICON },
     { to: '/profile', label: 'Профіль', icon: PROFILE_ICON },
-    ...(isAdmin ? [{ to: '/admin', label: 'Адмінка', icon: ADMIN_ICON } as NavItem] : [])
+    ...(isAdmin ? [{ to: '/admin', label: 'Адмін-панель', icon: ADMIN_ICON } as NavItem] : [])
   ];
 
   return (
@@ -91,9 +64,6 @@ export default function MainNav({ isAdmin }: { isAdmin: boolean }) {
               <a href={item.to}>
                 {item.icon}
                 <span>{item.label}</span>
-                {item.hasCounter && cartCount > 0 && (
-                  <span id="cartCount">{cartCount}</span>
-                )}
               </a>
             ) : (
               <NavLink to={item.to} end={item.end}>

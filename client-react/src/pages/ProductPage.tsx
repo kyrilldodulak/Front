@@ -141,7 +141,11 @@ export default function ProductPage() {
         <div>
           <div className="card">
             <div className="product-meta">
-              {product.released && <span className="meta-chip">📅 {product.released}</span>}
+              {product.released && (
+                <span className="meta-chip">
+                  {new Date(product.released).toLocaleDateString('uk-UA', { day: 'numeric', month: 'short', year: 'numeric' })}
+                </span>
+              )}
               {product.metacritic && <span className="meta-chip">Metacritic {product.metacritic}</span>}
               {product.rating > 0 && <span className="meta-chip">★ {product.rating.toFixed(1)}</span>}
               {product.platforms.slice(0, 3).map((p) => (
@@ -169,27 +173,30 @@ export default function ProductPage() {
           </div>
 
           <section aria-labelledby="reviewsTitle" className="mt-24">
-            <h2 id="reviewsTitle">Відгуки</h2>
+            <h2 id="reviewsTitle">Відгуки гравців</h2>
 
             {user ? (
-              <form className="card stack" onSubmit={handleSubmitReview}>
-                <div className="form-row">
-                  <label>Оцінка</label>
-                  <select value={rating} onChange={(e) => setRating(Number(e.target.value))}>
-                    {[5, 4, 3, 2, 1].map((n) => (
-                      <option key={n} value={n}>{'★'.repeat(n)}</option>
-                    ))}
-                  </select>
-                </div>
-                <div className="form-row">
-                  <label>Ваш відгук</label>
-                  <textarea value={body} onChange={(e) => setBody(e.target.value)} maxLength={2000} />
-                </div>
-                {postError && <p className="error-text">{postError}</p>}
-                <button className="btn btn-primary" type="submit" disabled={submitting}>
-                  {submitting ? 'Надсилання…' : 'Залишити відгук'}
-                </button>
-              </form>
+              <>
+                <h3 style={{ fontSize: 13, fontWeight: 500, marginBottom: 10, marginTop: 16, textTransform: 'uppercase', letterSpacing: '0.04em', color: 'var(--muted)' }}>Залишити відгук</h3>
+                <form className="card stack" onSubmit={handleSubmitReview}>
+                  <div className="form-row">
+                    <label>Оцінка</label>
+                    <select value={rating} onChange={(e) => setRating(Number(e.target.value))}>
+                      {[5, 4, 3, 2, 1].map((n) => (
+                        <option key={n} value={n}>{'★'.repeat(n)}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="form-row">
+                    <label>Ваш відгук</label>
+                    <textarea value={body} onChange={(e) => setBody(e.target.value)} maxLength={2000} />
+                  </div>
+                  {postError && <p className="error-text">{postError}</p>}
+                  <button className="btn btn-primary" type="submit" disabled={submitting}>
+                    {submitting ? 'Надсилання…' : 'Залишити відгук'}
+                  </button>
+                </form>
+              </>
             ) : (
               <p className="muted">
                 <a href="/login.html">Увійдіть</a>, щоб залишити відгук.

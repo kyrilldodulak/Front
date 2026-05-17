@@ -10,7 +10,7 @@
     return n;
   }
 
-  var NAV_ITEMS = [
+  var BASE_NAV_ITEMS = [
     {
       href: '/',
       label: 'Головна',
@@ -20,35 +20,42 @@
     {
       href: '/catalog',
       label: 'Каталог',
-      match: function (p) { return p.indexOf('/catalog') === 0 || p.indexOf('/products') === 0; },
+      match: function (p) { return p.indexOf('/catalog') === 0 || p.indexOf('/products') === 0 || p.indexOf('/product/') === 0; },
       icon: '<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>'
     },
     {
       href: '/cart.html',
       label: 'Кошик',
-      hasCounter: true,
       match: function (p) { return p === '/cart.html' || p === '/checkout.html'; },
       icon: '<path d="M3 3h2l2.4 12.3a2 2 0 002 1.7h7.7a2 2 0 002-1.6L21 8H6"/><circle cx="9" cy="20" r="1.5"/><circle cx="17" cy="20" r="1.5"/>'
     },
     {
       href: '/profile',
       label: 'Профіль',
-      match: function (p) { return p.indexOf('/profile') === 0 || p.indexOf('/admin') === 0; },
+      match: function (p) { return p.indexOf('/profile') === 0; },
       icon: '<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-7 8-7s8 3 8 7"/>'
     }
   ];
 
-  function renderNav() {
+  var ADMIN_NAV_ITEM = {
+    href: '/admin',
+    label: 'Адмін-панель',
+    match: function (p) { return p.indexOf('/admin') === 0; },
+    icon: '<path d="M12 3l8 4v5c0 5-3.5 9-8 10-4.5-1-8-5-8-10V7z"/><path d="M9 12l2 2 4-4"/>'
+  };
+
+  function renderNav(user) {
     var nav = document.querySelector('#siteHeader nav');
     if (!nav) return;
     var current = window.location.pathname;
-    nav.innerHTML = '<ul>' + NAV_ITEMS.map(function (item) {
+    var items = BASE_NAV_ITEMS.slice();
+    if (user && user.role === 'admin') items.push(ADMIN_NAV_ITEM);
+    nav.innerHTML = '<ul>' + items.map(function (item) {
       var active = item.match(current);
       return '<li><a href="' + item.href + '"' + (active ? ' aria-current="page"' : '') + '>' +
         '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
         item.icon + '</svg>' +
         '<span>' + item.label + '</span>' +
-        (item.hasCounter ? ' <span id="cartCount" aria-label="кількість у кошику">0</span>' : '') +
         '</a></li>';
     }).join('') + '</ul>';
   }
@@ -58,11 +65,7 @@
     if (!block) return;
     block.innerHTML = '';
     if (user) {
-      if (user.role === 'admin') {
-        block.appendChild(el('a', { class: 'btn btn-ghost', href: '/admin' }, 'Адмін'));
-      }
       block.appendChild(el('span', { class: 'muted' }, 'Привіт, ' + user.username));
-      block.appendChild(el('a', { class: 'btn btn-ghost', href: '/profile' }, 'Профіль'));
       var logout = el('button', { class: 'btn btn-primary', type: 'button' }, 'Вийти');
       logout.addEventListener('click', function () {
         api.logout().then(function () { window.location.href = '/'; });
@@ -118,12 +121,15 @@
   window.GameShopAuth = api;
 
   document.addEventListener('DOMContentLoaded', function () {
-    renderNav();
-    if (window.GameShopCart) {
-      var counter = document.getElementById('cartCount');
-      if (counter) counter.textContent = String(window.GameShopCart.totalQty());
-    }
-    api.me().then(function (res) { renderAuthBlock(res && res.user); });
+    renderNav(null);
+    api.me().then(function (res) {
+      var user = res && res.user;
+      renderNav(user);
+      if (window.GameShopCart) {
+        window.GameShopCart.switchUser(user ? user.username : null);
+      }
+      renderAuthBlock(user);
+    });
   });
 
   document.addEventListener('DOMContentLoaded', function () {

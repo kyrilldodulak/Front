@@ -1,7 +1,8 @@
-import { Routes, Route, useLocation } from 'react-router-dom';
-import { useEffect } from 'react';
+import { Routes, Route } from 'react-router-dom';
+import { useEffect, useRef } from 'react';
 import { useAppDispatch, useAppSelector } from './store/hooks';
 import { fetchMe, logout } from './store/authSlice';
+import { switchCartUser } from './components/cart';
 import CatalogPage from './pages/CatalogPage';
 import ProductPage from './pages/ProductPage';
 import ProfilePage from './pages/ProfilePage';
@@ -12,11 +13,19 @@ import MainNav from './components/MainNav';
 export default function App() {
   const dispatch = useAppDispatch();
   const user = useAppSelector((s) => s.auth.user);
-  const location = useLocation();
+  const prevUsername = useRef<string | null>(null);
 
   useEffect(() => {
     dispatch(fetchMe());
   }, [dispatch]);
+
+  useEffect(() => {
+    const username = user?.username ?? null;
+    if (username !== prevUsername.current) {
+      prevUsername.current = username;
+      switchCartUser(username);
+    }
+  }, [user]);
 
   return (
     <>
@@ -63,17 +72,13 @@ export default function App() {
         <div className="footer-inner">
           <div>
             <h4>GameShop</h4>
-            <p>© 2026, КПІ ім. Сікорського. Поточний маршрут: {location.pathname}</p>
+            <p>© 2026, КПІ ім. Сікорського</p>
           </div>
           <div>
             <h4>API</h4>
-            <ul>
-              <li>
-                <a href="/api/docs">Swagger UI</a>
-              </li>
-              <li>
-                <a href="/api/products">/api/products</a>
-              </li>
+            <ul className="unstyled-list">
+              <li><a href="/api/docs">Swagger UI</a></li>
+              <li><a href="/api/products">/api/products</a></li>
             </ul>
           </div>
         </div>

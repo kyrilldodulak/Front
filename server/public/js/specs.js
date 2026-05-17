@@ -76,9 +76,7 @@
     }
   ];
 
-  var search = document.getElementById('specsSearch');
   var select = document.getElementById('specsGame');
-  var datalist = document.getElementById('specsGamesList');
   var caption = document.getElementById('specsCaption');
   var meta = document.getElementById('specsMeta');
   var tbody = document.querySelector('#specsTable tbody');
@@ -89,20 +87,7 @@
     opt.value = g.id;
     opt.textContent = g.title;
     select.appendChild(opt);
-
-    var dopt = document.createElement('option');
-    dopt.value = g.title;
-    dopt.dataset.id = g.id;
-    datalist.appendChild(dopt);
   });
-
-  function findByTitle(value) {
-    var lower = value.trim().toLowerCase();
-    if (!lower) return null;
-    var exact = SPECS.find(function (g) { return g.title.toLowerCase() === lower; });
-    if (exact) return exact;
-    return SPECS.find(function (g) { return g.title.toLowerCase().indexOf(lower) !== -1; }) || null;
-  }
 
   function render(game) {
     if (!game) {
@@ -129,23 +114,9 @@
 
   select.addEventListener('change', function () {
     var game = SPECS.find(function (g) { return g.id === select.value; });
-    if (game) {
-      search.value = game.title;
-      render(game);
-    }
-  });
-
-  search.addEventListener('input', function () {
-    var game = findByTitle(search.value);
-    if (game) {
-      select.value = game.id;
-      render(game);
-    } else if (!search.value) {
-      render(null);
-    }
+    if (game) render(game);
   });
 
   select.value = SPECS[0].id;
-  search.value = SPECS[0].title;
   render(SPECS[0]);
 })();

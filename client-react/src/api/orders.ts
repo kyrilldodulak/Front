@@ -3,6 +3,7 @@ export type OrderItem = {
   title: string;
   price: number;
   qty: number;
+  activation_key: string | null;
 };
 
 export type Order = {
@@ -10,9 +11,9 @@ export type Order = {
   user_id: number | null;
   full_name: string;
   email: string;
-  phone: string;
-  city: string;
-  address: string;
+  phone: string | null;
+  city: string | null;
+  address: string | null;
   comment: string | null;
   status: 'new' | 'paid' | 'shipped' | 'cancelled';
   total: number;

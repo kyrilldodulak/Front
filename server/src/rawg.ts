@@ -266,7 +266,7 @@ export async function getProduct(slug: string): Promise<Product | null> {
         );
         screenshots = (sc.results ?? []).map((s) => s.image).filter(Boolean);
       } catch {
-        // screenshots are non-critical
+        screenshots = [];
       }
     } catch (err) {
       console.warn('[rawg] detail fallback:', (err as Error).message);

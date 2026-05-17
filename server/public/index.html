@@ -27,39 +27,22 @@
   </header>
 
   <main id="main">
-    <section class="hero" aria-labelledby="heroTitle">
-      <span class="deal-badge" aria-label="акція до неділі">-30% до неділі</span>
-      <div class="hero-text">
-        <h1 id="heroTitle">Літній розпродаж AAA-тайтлів</h1>
-        <p>Понад 200 ігор зі знижкою. Купи зараз і отримай бонусні гральні карти.</p>
-        <a href="/catalog" class="btn btn-primary">До каталогу</a>
-      </div>
-      <div class="hero-image-wrap">
-        <!-- зображення з image map: 5 окремих платформ ведуть на каталог із фільтром -->
-        <img
-          class="hero-image"
-          src="/images/hero-platforms.svg"
-          alt="Платформи: PC, PlayStation, Xbox, Switch, Steam Deck — клікабельні зони"
-          usemap="#platformsMap"
-        >
-        <map name="platformsMap">
-          <area shape="rect" coords="0,0,150,150" href="/catalog?platform=pc" alt="PC">
-          <area shape="rect" coords="150,0,300,150" href="/catalog?platform=playstation" alt="PlayStation">
-          <area shape="rect" coords="300,0,450,150" href="/catalog?platform=xbox" alt="Xbox">
-          <area shape="rect" coords="0,150,225,300" href="/catalog?platform=nintendo" alt="Nintendo Switch">
-          <area shape="rect" coords="225,150,450,300" href="/catalog?platform=steamdeck" alt="Steam Deck">
-        </map>
-      </div>
+    <section class="about" aria-labelledby="aboutTitle">
+      <h1 id="aboutTitle">Про нас</h1>
+      <p>
+        GameShop — український онлайн-магазин цифрових ігор. Продаємо ліцензійні
+        ключі активації для Steam, Epic Games Store, GOG та інших платформ.
+        Ключ приходить на email одразу після оплати — без черг, кур'єрів та очікування.
+      </p>
     </section>
 
     <section class="block" aria-labelledby="popularTitle">
-      <h2 id="popularTitle">Популярні ігри</h2>
-      <p class="muted">Топ продаж за тиждень. Усі ціни — у гривнях, з ПДВ.</p>
-      <div class="games-grid mt-16" id="popularGrid" data-popular-grid>
-        <article class="game-card" data-slug="cyberpunk-2077">
-          <a href="/product/cyberpunk-2077" class="game-card-cover-link" aria-label="Cyberpunk 2077">
-            <img class="cover" src="/images/cover-1.svg" alt="Обкладинка Cyberpunk 2077">
-          </a>
+      <div class="section-head">
+        <h2 id="popularTitle">Популярні зараз</h2>
+        <a href="/catalog" class="btn btn-ghost btn-sm">Всі ігри →</a>
+      </div>
+      <div class="games-grid games-grid--compact mt-16" id="popularGrid" data-popular-grid>
+        <article class="game-card game-card--text" data-slug="cyberpunk-2077">
           <div class="game-card-body">
             <h3 class="game-title">
               <a href="/product/cyberpunk-2077">Cyberpunk 2077</a>
@@ -69,14 +52,11 @@
             </ul>
             <div class="game-row">
               <span class="price">899 ₴</span>
-              <button class="btn btn-primary" data-add-to-cart data-id="cyberpunk-2077" data-title="Cyberpunk 2077" data-price="899" data-image="/images/cover-1.svg">У кошик</button>
+              <button class="btn btn-primary" data-add-to-cart data-id="cyberpunk-2077" data-title="Cyberpunk 2077" data-price="899">У кошик</button>
             </div>
           </div>
         </article>
-        <article class="game-card" data-slug="the-witcher-3-wild-hunt">
-          <a href="/product/the-witcher-3-wild-hunt" class="game-card-cover-link" aria-label="The Witcher 3">
-            <img class="cover" src="/images/cover-2.svg" alt="Обкладинка The Witcher 3">
-          </a>
+        <article class="game-card game-card--text" data-slug="the-witcher-3-wild-hunt">
           <div class="game-card-body">
             <h3 class="game-title">
               <a href="/product/the-witcher-3-wild-hunt">The Witcher 3: Wild Hunt</a>
@@ -86,14 +66,11 @@
             </ul>
             <div class="game-row">
               <span class="price">499 ₴</span>
-              <button class="btn btn-primary" data-add-to-cart data-id="the-witcher-3-wild-hunt" data-title="The Witcher 3: Wild Hunt" data-price="499" data-image="/images/cover-2.svg">У кошик</button>
+              <button class="btn btn-primary" data-add-to-cart data-id="the-witcher-3-wild-hunt" data-title="The Witcher 3: Wild Hunt" data-price="499">У кошик</button>
             </div>
           </div>
         </article>
-        <article class="game-card" data-slug="hades-ii">
-          <a href="/product/hades-ii" class="game-card-cover-link" aria-label="Hades II">
-            <img class="cover" src="/images/cover-3.svg" alt="Обкладинка Hades II">
-          </a>
+        <article class="game-card game-card--text" data-slug="hades-ii">
           <div class="game-card-body">
             <h3 class="game-title">
               <a href="/product/hades-ii">Hades II</a>
@@ -103,14 +80,11 @@
             </ul>
             <div class="game-row">
               <span class="price">699 ₴</span>
-              <button class="btn btn-primary" data-add-to-cart data-id="hades-ii" data-title="Hades II" data-price="699" data-image="/images/cover-3.svg">У кошик</button>
+              <button class="btn btn-primary" data-add-to-cart data-id="hades-ii" data-title="Hades II" data-price="699">У кошик</button>
             </div>
           </div>
         </article>
-        <article class="game-card" data-slug="baldurs-gate-3">
-          <a href="/product/baldurs-gate-3" class="game-card-cover-link" aria-label="Baldur's Gate 3">
-            <img class="cover" src="/images/cover-4.svg" alt="Обкладинка Baldur's Gate 3">
-          </a>
+        <article class="game-card game-card--text" data-slug="baldurs-gate-3">
           <div class="game-card-body">
             <h3 class="game-title">
               <a href="/product/baldurs-gate-3">Baldur's Gate 3</a>
@@ -120,33 +94,21 @@
             </ul>
             <div class="game-row">
               <span class="price">1499 ₴</span>
-              <button class="btn btn-primary" data-add-to-cart data-id="baldurs-gate-3" data-title="Baldur's Gate 3" data-price="1499" data-image="/images/cover-4.svg">У кошик</button>
+              <button class="btn btn-primary" data-add-to-cart data-id="baldurs-gate-3" data-title="Baldur's Gate 3" data-price="1499">У кошик</button>
             </div>
           </div>
         </article>
       </div>
     </section>
 
-    <section class="block mt-24" aria-labelledby="specsTitle">
+    <section class="block mt-40" aria-labelledby="specsTitle">
       <h2 id="specsTitle">Системні вимоги</h2>
+      <p class="muted">Перевірте чи потягне ваш ПК перед покупкою.</p>
 
       <div class="card specs-card">
-        <div class="specs-controls">
-          <div class="form-row grow">
-            <label for="specsSearch">Пошук гри</label>
-            <input
-              id="specsSearch"
-              type="search"
-              list="specsGamesList"
-              placeholder="Почніть вводити: Witcher, Hades…"
-              autocomplete="off"
-            >
-            <datalist id="specsGamesList"></datalist>
-          </div>
-          <div class="form-row">
-            <label for="specsGame">Або оберіть зі списку</label>
-            <select id="specsGame"></select>
-          </div>
+        <div class="form-row" style="max-width:320px;">
+          <label for="specsGame">Оберіть гру</label>
+          <select id="specsGame"></select>
         </div>
 
         <div class="specs-meta" id="specsMeta"></div>
@@ -165,46 +127,25 @@
       </div>
     </section>
 
-    <section class="block mt-24" aria-labelledby="newsTitle">
-      <h2 id="newsTitle">Новини магазину</h2>
-      <div class="news-list">
-        <article class="news-card">
-          <div class="news-cover">
-            <img src="/images/news-launch.svg" alt="" loading="lazy">
-            <span class="news-tag">Запуск</span>
-          </div>
-          <div class="news-content">
-            <time datetime="2026-05-10">10 травня 2026</time>
-            <h3>Запуск версії 1.0 GameShop</h3>
-            <p>Ми відкрили ранній доступ до власної бета-платформи. Реєструйтеся, щоб отримати стартові бонуси.</p>
-            <a href="/register.html" class="news-link">Зареєструватись →</a>
-          </div>
-        </article>
-        <article class="news-card">
-          <div class="news-cover">
-            <img src="/images/news-rawg.svg" alt="" loading="lazy">
-            <span class="news-tag tag-tech">API</span>
-          </div>
-          <div class="news-content">
-            <time datetime="2026-05-05">05 травня 2026</time>
-            <h3>Партнерство з RAWG.io</h3>
-            <p>Каталог підтягується з найбільшої відкритої бази даних відеоігор — понад 800 000 тайтлів.</p>
-            <a href="/catalog" class="news-link">Перейти в каталог →</a>
-          </div>
-        </article>
-        <article class="news-card">
-          <div class="news-cover">
-            <img src="/images/news-bonus.svg" alt="" loading="lazy">
-            <span class="news-tag tag-bonus">Бонус</span>
-          </div>
-          <div class="news-content">
-            <time datetime="2026-05-01">01 травня 2026</time>
-            <h3>Бонусна програма +5%</h3>
-            <p>Отримуйте 5% кешбеку гральними картами за кожне замовлення. Витрачайте на наступні покупки.</p>
-            <a href="/profile" class="news-link">Мої бонуси →</a>
-          </div>
-        </article>
-      </div>
+    <section class="block mt-40" aria-labelledby="newsTitle">
+      <h2 id="newsTitle">Останні новини</h2>
+      <ul class="news-plain">
+        <li>
+          <time datetime="2026-05-10">10 травня 2026</time>
+          <h3>Запуск версії 1.0 GameShop</h3>
+          <p>Ми відкрили ранній доступ до власної бета-платформи. Реєструйтеся, щоб отримати стартові бонуси.</p>
+        </li>
+        <li>
+          <time datetime="2026-05-05">05 травня 2026</time>
+          <h3>Партнерство з RAWG.io</h3>
+          <p>Каталог підтягується з найбільшої відкритої бази даних відеоігор — понад 800 000 тайтлів.</p>
+        </li>
+        <li>
+          <time datetime="2026-05-01">01 травня 2026</time>
+          <h3>Знижка −5% на весь каталог</h3>
+          <p>Тільки зараз — мінус 5% від суми у кошику застосовується автоматично при оформленні.</p>
+        </li>
+      </ul>
     </section>
   </main>
 
@@ -267,21 +208,34 @@
           +38 (000) 000-00-00
         </a>
         <span class="footer-line">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s-7-7-7-13a7 7 0 0114 0c0 6-7 13-7 13z"/><circle cx="12" cy="9" r="2.5"/></svg>
-          Київ, КПІ ім. Сікорського
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+          Підтримка 24/7 онлайн
         </span>
       </div>
     </div>
 
     <div class="footer-bottom">
-      <span>© 2026 GameShop · ІП-23 · Лабораторні роботи Web/React</span>
+      <span>© 2026 GameShop · КМ-32 · Лабораторні роботи Web/React</span>
       <span class="footer-tech">Node · Express · React · SQLite</span>
     </div>
   </footer>
 
   <script src="/js/header.js" defer></script>
   <script src="/js/cart.js" defer></script>
-  <script src="/js/dynamic.js" defer></script>
   <script src="/js/specs.js" defer></script>
+  <script>
+    (function () {
+      var prices = window.__HOME_PRICES__ || {};
+      document.querySelectorAll('[data-popular-grid] [data-slug]').forEach(function (card) {
+        var slug = card.dataset.slug;
+        if (slug && prices[slug] !== undefined) {
+          var priceEl = card.querySelector('.price');
+          if (priceEl) priceEl.textContent = prices[slug] + ' ₴';
+          var btn = card.querySelector('[data-price]');
+          if (btn) btn.dataset.price = String(prices[slug]);
+        }
+      });
+    })();
+  </script>
 </body>
 </html>

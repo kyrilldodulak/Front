@@ -21,54 +21,47 @@
   </header>
 
   <main id="main">
-    <section class="auth-wrapper card">
-      <h1>Створення акаунту</h1>
-      <p class="muted">Зареєструйтесь, щоб купувати ігри та залишати відгуки.</p>
+    <section class="auth-box" aria-labelledby="registerTitle">
+      <header class="auth-head">
+        <h1 id="registerTitle">Реєстрація</h1>
+        <p class="muted">Створи акаунт, щоб купувати ігри та залишати відгуки.</p>
+      </header>
 
-      <form id="registerForm" class="stack mt-16" novalidate>
+      <form id="registerForm" class="stack" novalidate>
         <div class="form-row">
           <label for="regUsername">Логін</label>
           <input id="regUsername" name="username" type="text" required minlength="3" maxlength="32" autocomplete="username">
           <span class="error-text" data-error-for="username"></span>
         </div>
-
         <div class="form-row">
           <label for="regEmail">Email</label>
           <input id="regEmail" name="email" type="email" required autocomplete="email">
           <span class="error-text" data-error-for="email"></span>
         </div>
-
         <div class="form-row">
           <label for="regPassword">Пароль</label>
-          <input id="regPassword" name="password" type="password" required minlength="6" autocomplete="new-password">
+          <div class="auth-password">
+            <input id="regPassword" name="password" type="password" required minlength="6" autocomplete="new-password">
+            <button type="button" class="auth-eye" data-toggle-password aria-label="Показати пароль">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
           <span class="error-text" data-error-for="password"></span>
         </div>
-
         <div class="form-row">
           <label for="regPassword2">Повторіть пароль</label>
-          <input id="regPassword2" name="password2" type="password" required autocomplete="new-password">
+          <div class="auth-password">
+            <input id="regPassword2" name="password2" type="password" required autocomplete="new-password">
+            <button type="button" class="auth-eye" data-toggle-password aria-label="Показати пароль">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
           <span class="error-text" data-error-for="password2"></span>
         </div>
-
-        <div class="form-row">
-          <label for="regRole">Тип акаунту</label>
-          <select id="regRole" name="role">
-            <option value="user" selected>Покупець</option>
-            <option value="seller">Продавець (потрібна назва компанії)</option>
-          </select>
-        </div>
-
-        <div class="form-row" id="companyRow" hidden>
-          <label for="regCompany">Назва компанії</label>
-          <input id="regCompany" name="company" type="text">
-          <span class="error-text" data-error-for="company"></span>
-        </div>
-
         <div class="form-row">
           <label for="regBirth">Дата народження</label>
           <input id="regBirth" name="birth" type="date">
         </div>
-
         <div class="form-row">
           <label>
             <input type="checkbox" name="agree" required>
@@ -76,12 +69,11 @@
           </label>
           <span class="error-text" data-error-for="agree"></span>
         </div>
-
         <button class="btn btn-primary btn-block" type="submit">Зареєструватись</button>
         <p class="success-text" id="registerSuccess" hidden></p>
       </form>
 
-      <p class="muted mt-16 center">Вже маєте акаунт? <a href="/login.html">Увійти</a></p>
+      <p class="auth-switch">Вже маєш акаунт? <a href="/login.html">Увійти</a></p>
     </section>
   </main>
 
@@ -93,6 +85,7 @@
 
   <script src="/js/header.js" defer></script>
   <script src="/js/cart.js" defer></script>
+  <script src="/js/auth-ui.js" defer></script>
   <script src="/js/validation.js" defer></script>
 </body>
 </html>

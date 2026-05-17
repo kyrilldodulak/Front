@@ -1,7 +1,26 @@
 (function () {
   'use strict';
 
-  var STORAGE_KEY = 'gameshop.cart.v1';
+  var COUNT_CACHE_KEY = 'gameshop.cart.count';
+  function makeKey(username) {
+    return 'gameshop.cart.v1:' + (username || 'guest');
+  }
+  var STORAGE_KEY = makeKey(null);
+  var sessionReady = false;
+
+  function totalQty(items) {
+    return items.reduce(function (s, it) { return s + it.qty; }, 0);
+  }
+  function writeCountCache(items) {
+    try { localStorage.setItem(COUNT_CACHE_KEY, String(totalQty(items))); } catch (e) {}
+  }
+  function readCountCache() {
+    try {
+      var v = localStorage.getItem(COUNT_CACHE_KEY);
+      var n = v ? Number(v) : 0;
+      return isFinite(n) && n >= 0 ? n : 0;
+    } catch (e) { return 0; }
+  }
 
   function read() {
     try {
@@ -16,12 +35,10 @@
 
   function write(items) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+    writeCountCache(items);
     document.dispatchEvent(new CustomEvent('cart:changed', { detail: items }));
   }
 
-  function totalQty(items) {
-    return items.reduce(function (s, it) { return s + it.qty; }, 0);
-  }
   function totalSum(items) {
     return items.reduce(function (s, it) { return s + it.qty * it.price; }, 0);
   }
@@ -95,7 +112,35 @@
     clear: function () { write([]); },
 
     totalQty: function () { return totalQty(read()); },
-    totalSum: function () { return totalSum(read()); }
+    totalSum: function () { return totalSum(read()); },
+
+    switchUser: function (username) {
+      sessionReady = true;
+      var oldKey = STORAGE_KEY;
+      var newKey = makeKey(username);
+      if (oldKey === newKey) {
+        document.dispatchEvent(new CustomEvent('cart:changed', { detail: read() }));
+        return;
+      }
+      var prevItems = read();
+      STORAGE_KEY = newKey;
+      if (prevItems.length > 0 && oldKey === makeKey(null)) {
+        var nextItems = read();
+        prevItems.forEach(function (item) {
+          var existing = nextItems.find(function (i) { return i.id === item.id; });
+          if (existing) { existing.qty += item.qty; }
+          else { nextItems.push(item); }
+        });
+        localStorage.removeItem(oldKey);
+        write(nextItems);
+      } else {
+        var current = read();
+        writeCountCache(current);
+        document.dispatchEvent(new CustomEvent('cart:changed', { detail: current }));
+      }
+    },
+
+    cachedCount: readCountCache
   };
 
   window.GameShopCart = api;
@@ -112,14 +157,6 @@
     });
   });
 
-  function updateCartCount() {
-    var node = document.getElementById('cartCount');
-    if (!node) return;
-    node.textContent = String(totalQty(read()));
-  }
-  document.addEventListener('cart:changed', updateCartCount);
-  document.addEventListener('DOMContentLoaded', updateCartCount);
-
   window.addEventListener('storage', function (ev) {
     if (ev.key === STORAGE_KEY) {
       document.dispatchEvent(new CustomEvent('cart:changed', { detail: read() }));
@@ -131,12 +168,21 @@
     var listEl = document.getElementById('cartItems');
     var emptyEl = document.getElementById('cartEmpty');
 
+    var pendingFetch = !sessionReady && readCountCache() > 0 && items.length === 0;
+
+    var checkoutBtn = document.getElementById('checkoutBtn');
+    if (checkoutBtn) {
+      if (items.length === 0) checkoutBtn.setAttribute('aria-disabled', 'true');
+      else checkoutBtn.removeAttribute('aria-disabled');
+    }
+
     if (listEl) {
-      if (items.length === 0) {
+      if (pendingFetch) {
+        listEl.innerHTML = '<div class="card" style="text-align:center;padding:32px;color:var(--muted);">Завантаження кошика…</div>';
+        if (emptyEl) emptyEl.hidden = true;
+      } else if (items.length === 0) {
         listEl.innerHTML = '';
         if (emptyEl) emptyEl.hidden = false;
-        var checkoutBtn = document.getElementById('checkoutBtn');
-        if (checkoutBtn) checkoutBtn.setAttribute('aria-disabled', 'true');
       } else {
         if (emptyEl) emptyEl.hidden = true;
         listEl.innerHTML = items.map(function (it) {
@@ -163,11 +209,11 @@
 
     var sub = totalSum(items);
     var qty = totalQty(items);
-    var discount = sub > 1500 ? Math.round(sub * 0.05) : 0;
+    var discount = Math.round(sub * 0.05);
     var total = sub - discount;
     setText('sumQty', String(qty));
     setText('sumSubtotal', sub + ' ₴');
-    setText('sumDiscount', discount + ' ₴');
+    setText('sumDiscount', '−' + discount + ' ₴');
     setText('sumTotal', total + ' ₴');
 
     var checkoutSummary = document.getElementById('checkoutSummaryItems');
@@ -177,8 +223,10 @@
           '<p class="muted" style="padding:8px 0;">Кошик порожній. <a href="/cart.html">Перейти в кошик</a></p>';
       } else {
         checkoutSummary.innerHTML = items.map(function (it) {
-          return '<div class="row"><span>' + escapeHtml(it.title) + ' × ' + it.qty +
-            '</span><span>' + (it.price * it.qty) + ' ₴</span></div>';
+          return '<div class="row">' +
+            '<span class="row-title" title="' + escapeHtml(it.title) + '">' + escapeHtml(it.title) + ' × ' + it.qty + '</span>' +
+            '<span class="row-price">' + (it.price * it.qty) + ' ₴</span>' +
+            '</div>';
         }).join('');
       }
     }

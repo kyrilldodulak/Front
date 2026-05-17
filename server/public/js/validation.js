@@ -2,7 +2,6 @@
   'use strict';
 
   var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  var PHONE_RE = /^\+?\d{10,13}$/;
 
   function getReturnUrl(fallback) {
     try {
@@ -26,31 +25,6 @@
 
   var regForm = document.getElementById('registerForm');
   if (regForm) {
-    var roleSelect = regForm.querySelector('[name="role"]');
-    var companyRow = document.getElementById('companyRow');
-    var companyInput = regForm.querySelector('[name="company"]');
-
-    function companyInputHandler() {
-      var value = companyInput.value.trim();
-      if (value.length > 0 && value.length < 2) {
-        showError(regForm, 'company', 'Назва занадто коротка');
-      } else {
-        showError(regForm, 'company', '');
-      }
-    }
-
-    roleSelect.addEventListener('change', function () {
-      var isSeller = roleSelect.value === 'seller';
-      companyRow.hidden = !isSeller;
-      companyInput.required = isSeller;
-      if (isSeller) {
-        companyInput.addEventListener('input', companyInputHandler);
-      } else {
-        companyInput.removeEventListener('input', companyInputHandler);
-        showError(regForm, 'company', '');
-      }
-    });
-
     var emailInput = regForm.querySelector('[name="email"]');
     emailInput.addEventListener('blur', function () {
       if (emailInput.value && !EMAIL_RE.test(emailInput.value)) {
@@ -87,9 +61,6 @@
       }
       if (data.password !== data.password2) {
         showError(regForm, 'password2', 'Паролі не співпадають'); ok = false;
-      }
-      if (data.role === 'seller' && (!data.company || data.company.length < 2)) {
-        showError(regForm, 'company', 'Вкажіть назву компанії'); ok = false;
       }
       if (!data.agree) {
         showError(regForm, 'agree', 'Погодьтесь з умовами'); ok = false;
@@ -154,31 +125,17 @@
       }
     });
 
-    var phoneCo = coForm.querySelector('[name="phone"]');
-    phoneCo.addEventListener('blur', function () {
-      if (phoneCo.value && !PHONE_RE.test(phoneCo.value)) {
-        showError(coForm, 'phone', 'Формат: +380XXXXXXXXX');
-      } else {
-        showError(coForm, 'phone', '');
-      }
-    });
-
     coForm.addEventListener('submit', function (ev) {
       ev.preventDefault();
       clearAllErrors(coForm);
       var data = Object.fromEntries(new FormData(coForm).entries());
       var ok = true;
       if (!data.fullName || data.fullName.length < 2) {
-        showError(coForm, 'fullName', "Введіть повне ім'я"); ok = false;
+        showError(coForm, 'fullName', "Введіть ім'я"); ok = false;
       }
       if (!EMAIL_RE.test(data.email || '')) {
         showError(coForm, 'email', 'Невалідний email'); ok = false;
       }
-      if (!PHONE_RE.test(data.phone || '')) {
-        showError(coForm, 'phone', 'Формат: +380XXXXXXXXX'); ok = false;
-      }
-      if (!data.city) { showError(coForm, 'city', 'Оберіть місто'); ok = false; }
-      if (!data.address) { showError(coForm, 'address', 'Введіть адресу'); ok = false; }
       if (!data.agree) { showError(coForm, 'agree', 'Погодьтесь з умовами'); ok = false; }
       if (!ok) return;
 
@@ -186,10 +143,14 @@
       var msg = document.getElementById('checkoutSuccess');
       if (items.length === 0) {
         msg.hidden = false;
+        msg.className = 'error-text';
         msg.textContent = 'Кошик порожній';
         return;
       }
 
+      var submitBtn = coForm.querySelector('button[type="submit"]');
+      if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Обробляємо…'; }
+      var lastStatus = 0;
       fetch('/api/orders', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -197,19 +158,28 @@
         body: JSON.stringify({ customer: data, items: items })
       })
         .then(function (r) {
-          if (!r.ok) throw new Error('Сервер відхилив замовлення');
+          lastStatus = r.status;
+          if (!r.ok) return r.json().then(function (body) {
+            throw new Error(body.error || 'server_error');
+          }).catch(function () {
+            throw new Error('server_error');
+          });
           return r.json();
         })
         .then(function (order) {
           msg.hidden = false;
-          msg.textContent = 'Замовлення №' + order.id + ' прийнято!';
+          msg.className = 'success-text';
+          msg.textContent = 'Замовлення №' + order.id + ' прийнято! Ключі вже на пошті.';
           window.GameShopCart.clear();
           setTimeout(function () { window.location.href = '/profile'; }, 1500);
         })
-        .catch(function (err) {
+        .catch(function () {
+          if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Підтвердити замовлення'; }
           msg.hidden = false;
           msg.className = 'error-text';
-          msg.textContent = err.message + ' (увійдіть, щоб оформити)';
+          msg.textContent = lastStatus === 401
+            ? 'Увійдіть, щоб оформити замовлення.'
+            : 'Не вдалося оформити замовлення. Спробуйте ще раз.';
         });
     });
   }

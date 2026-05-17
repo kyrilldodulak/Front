@@ -31,70 +31,43 @@
 
     <div class="checkout-wrapper">
       <section>
-        <ol class="card unstyled-list" style="padding-left:20px;list-style:decimal;">
-          <li>Заповніть особисті дані.</li>
-          <li>Оберіть спосіб доставки.</li>
-          <li>Підтвердіть замовлення.</li>
+        <ol class="checkout-steps card">
+          <li>Заповніть ім'я та email</li>
+          <li>Підтвердіть замовлення</li>
+          <li>Отримайте ключі активації на пошту</li>
         </ol>
 
         <form id="checkoutForm" class="card stack mt-16" novalidate>
           <fieldset>
-            <legend>Контактна інформація</legend>
+            <legend>Дані одержувача</legend>
+            <p class="muted" style="margin:0 0 12px;font-size:13px;">
+              Ключі активації прийдуть на вказану електронну пошту одразу після підтвердження.
+            </p>
             <div class="form-row">
-              <label for="coFullName">Повне ім'я</label>
+              <label for="coFullName">Ім'я</label>
               <input id="coFullName" name="fullName" type="text" required minlength="2" autocomplete="name">
               <span class="error-text" data-error-for="fullName"></span>
             </div>
             <div class="form-row">
-              <label for="coEmail">Email</label>
+              <label for="coEmail">Email для отримання ключів</label>
               <input id="coEmail" name="email" type="email" required autocomplete="email">
               <span class="error-text" data-error-for="email"></span>
             </div>
             <div class="form-row">
-              <label for="coPhone">Телефон</label>
-              <input id="coPhone" name="phone" type="tel" required pattern="^\+?\d{10,13}$" placeholder="+380XXXXXXXXX" autocomplete="tel">
-              <span class="error-text" data-error-for="phone"></span>
-            </div>
-          </fieldset>
-
-          <fieldset>
-            <legend>Доставка</legend>
-            <div class="form-row">
-              <label for="coCity">Місто</label>
-              <select id="coCity" name="city" required>
-                <option value="">— оберіть —</option>
-                <option value="Київ">Київ</option>
-                <option value="Львів">Львів</option>
-                <option value="Одеса">Одеса</option>
-                <option value="Харків">Харків</option>
-                <option value="Дніпро">Дніпро</option>
-              </select>
-              <span class="error-text" data-error-for="city"></span>
-            </div>
-            <div class="form-row">
-              <label for="coAddress">Адреса (відділення)</label>
-              <input id="coAddress" name="address" type="text" required minlength="3">
-              <span class="error-text" data-error-for="address"></span>
-            </div>
-            <div class="form-row">
-              <label for="coDate">Бажана дата доставки</label>
-              <input id="coDate" name="date" type="date">
-            </div>
-            <div class="form-row">
               <label for="coComment">Коментар (необов'язково)</label>
-              <textarea id="coComment" name="comment" maxlength="500"></textarea>
+              <textarea id="coComment" name="comment" maxlength="500" rows="3"></textarea>
             </div>
             <div class="form-row">
               <label>
                 <input type="checkbox" name="agree" required>
-                Я погоджуюсь з умовами використання
+                Я погоджуюсь з умовами використання та політикою повернень
               </label>
               <span class="error-text" data-error-for="agree"></span>
             </div>
           </fieldset>
 
           <button class="btn btn-primary btn-block" type="submit">Підтвердити замовлення</button>
-          <p class="success-text" id="checkoutSuccess" hidden>Замовлення оформлено! Перевірте пошту.</p>
+          <p class="success-text" id="checkoutSuccess" hidden></p>
         </form>
       </section>
 
@@ -102,7 +75,7 @@
         <h2 id="summaryTitle" style="font-size:18px;">Підсумок</h2>
         <div id="checkoutSummaryItems"></div>
         <div class="row"><span>Позицій</span><span id="sumQty">0</span></div>
-        <div class="row"><span>Доставка</span><span>безкоштовно</span></div>
+        <div class="row"><span>Доставка</span><span>миттєво на email</span></div>
         <div class="row total"><span>До сплати</span><span id="sumTotal">0 ₴</span></div>
       </aside>
     </div>

@@ -22,3 +22,5 @@ server/public/app/
 .idea/
 .vscode/
 *.swp
+*.tsbuildinfo
+*.pdf
